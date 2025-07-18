@@ -11,16 +11,18 @@ import {
   ActionIcon,
   Menu,
   Loader,
-  Center
+  Center,
+  Collapse
 } from '@mantine/core';
-import { IconMessage, IconDots, IconEdit, IconTrash } from '@tabler/icons-react';
+import { IconMessage, IconDots, IconEdit, IconTrash, IconCornerDownRight, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { 
   createComment, 
   subscribeToComments, 
   updateComment, 
-  deleteComment 
+  deleteComment,
+  toggleCommentLike 
 } from '../services/commentService';
 import type { Comment } from '../types';
 
@@ -41,16 +43,37 @@ function formatTimeAgo(date: Date): string {
 interface CommentItemProps {
   comment: Comment;
   currentUserId?: string;
+  userProfile: any;
+  postId: string;
   onEdit: (commentId: string, content: string) => void;
   onDelete: (commentId: string) => void;
+  onReply: (parentId: string, content: string) => void;
+  onLike: (commentId: string) => void;
+  depth?: number;
 }
 
-function CommentItem({ comment, currentUserId, onEdit, onDelete }: CommentItemProps) {
+function CommentItem({ 
+  comment, 
+  currentUserId, 
+  userProfile,
+  postId,
+  onEdit, 
+  onDelete, 
+  onReply,
+  onLike,
+  depth = 0 
+}: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isReplying, setIsReplying] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
+  const [replyContent, setReplyContent] = useState('');
   const [loading, setLoading] = useState(false);
+  const [replyLoading, setReplyLoading] = useState(false);
+  const [likeLoading, setLikeLoading] = useState(false);
   
   const isOwner = currentUserId === comment.author.uid;
+  const isLiked = currentUserId ? comment.likes?.includes(currentUserId) : false;
+  const maxDepth = 3; // 최대 3단계까지만 중첩 허용
 
   const handleEditSubmit = async () => {
     if (!editContent.trim()) return;
@@ -71,79 +94,242 @@ function CommentItem({ comment, currentUserId, onEdit, onDelete }: CommentItemPr
     setIsEditing(false);
   };
 
+  const handleReplySubmit = async () => {
+    if (!replyContent.trim()) return;
+    
+    setReplyLoading(true);
+    try {
+      await onReply(comment.id, replyContent.trim());
+      setReplyContent('');
+      setIsReplying(false);
+    } catch (error) {
+      console.error('대댓글 작성 오류:', error);
+    } finally {
+      setReplyLoading(false);
+    }
+  };
+
+  const handleReplyCancel = () => {
+    setReplyContent('');
+    setIsReplying(false);
+  };
+
+  const handleLikeClick = async () => {
+    if (likeLoading || !currentUserId) return;
+    
+    setLikeLoading(true);
+    try {
+      await onLike(comment.id);
+    } finally {
+      setTimeout(() => setLikeLoading(false), 300);
+    }
+  };
+
   return (
-    <Card withBorder radius="md" p="md">
-      <Group justify="space-between" mb="xs">
-        <Group gap="xs">
-          <Text size="sm" fw={600}>
-            {comment.author.avatar || '👤'} {comment.author.nickname}
-          </Text>
-          <Text size="xs" c="dimmed">
-            {formatTimeAgo(comment.createdAt)}
-          </Text>
+    <Box>
+      <Card 
+        withBorder 
+        radius="md" 
+        p="md"
+        style={{ 
+          marginLeft: depth > 0 ? `${depth * 20}px` : 0,
+          borderLeft: depth > 0 ? '3px solid var(--mantine-color-blue-2)' : undefined
+        }}
+      >
+        <Group justify="space-between" mb="xs">
+          <Group gap="xs">
+            <Text size="sm" fw={600}>
+              {comment.author.avatar || '👤'} {comment.author.nickname}
+            </Text>
+            <Text size="xs" c="dimmed">
+              {formatTimeAgo(comment.createdAt)}
+            </Text>
+          </Group>
+          
+          {isOwner && (
+            <Menu shadow="md" width={120}>
+              <Menu.Target>
+                <ActionIcon variant="subtle" size="sm" color="gray">
+                  <IconDots size="1rem" />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  leftSection={<IconEdit size="0.9rem" />}
+                  onClick={() => setIsEditing(true)}
+                >
+                  수정
+                </Menu.Item>
+                <Menu.Item
+                  leftSection={<IconTrash size="0.9rem" />}
+                  color="red"
+                  onClick={() => onDelete(comment.id)}
+                >
+                  삭제
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          )}
         </Group>
-        
-        {isOwner && (
-          <Menu shadow="md" width={120}>
-            <Menu.Target>
-              <ActionIcon variant="subtle" size="sm" color="gray">
-                <IconDots size="1rem" />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item
-                leftSection={<IconEdit size="0.9rem" />}
-                onClick={() => setIsEditing(true)}
+
+        {isEditing ? (
+          <Stack gap="sm">
+            <Textarea
+              value={editContent}
+              onChange={(e) => setEditContent(e.currentTarget.value)}
+              placeholder="댓글을 입력하세요..."
+              autosize
+              minRows={2}
+              maxRows={6}
+            />
+            <Group gap="sm" justify="flex-end">
+              <Button
+                variant="subtle"
+                size="sm"
+                onClick={handleEditCancel}
+                disabled={loading}
+              >
+                취소
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleEditSubmit}
+                loading={loading}
+                disabled={!editContent.trim()}
               >
                 수정
-              </Menu.Item>
-              <Menu.Item
-                leftSection={<IconTrash size="0.9rem" />}
-                color="red"
-                onClick={() => onDelete(comment.id)}
-              >
-                삭제
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        )}
-      </Group>
+              </Button>
+            </Group>
+          </Stack>
+        ) : (
+          <>
+            <Text size="sm" style={{ whiteSpace: 'pre-wrap' }} mb="sm">
+              {comment.content}
+            </Text>
+            
+            {/* 댓글 액션 버튼들 */}
+            <Group gap="md" justify="space-between">
+              <Group gap="sm">
+                {/* 좋아요 버튼 */}
+                {currentUserId && (
+                  <Group gap="xs">
+                    <ActionIcon
+                      variant="subtle"
+                      color={isLiked ? 'red' : 'gray'}
+                      size="sm"
+                      onClick={handleLikeClick}
+                      loading={likeLoading}
+                      style={{
+                        transform: isLiked ? 'scale(1.1)' : 'scale(1)',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      {isLiked ? (
+                        <IconHeartFilled 
+                          size={14} 
+                          style={{ 
+                            animation: isLiked ? 'heartBeat 0.6s ease-in-out' : undefined 
+                          }} 
+                        />
+                      ) : (
+                        <IconHeart size={14} />
+                      )}
+                    </ActionIcon>
+                    <Text 
+                      size="xs" 
+                      fw={isLiked ? 600 : 400}
+                      c={isLiked ? 'red' : 'dimmed'}
+                    >
+                      {comment.likes?.length || 0}
+                    </Text>
+                  </Group>
+                )}
+              </Group>
 
-      {isEditing ? (
-        <Stack gap="sm">
-          <Textarea
-            value={editContent}
-            onChange={(e) => setEditContent(e.currentTarget.value)}
-            placeholder="댓글을 입력하세요..."
-            autosize
-            minRows={2}
-            maxRows={6}
-          />
-          <Group gap="sm" justify="flex-end">
-            <Button
-              variant="subtle"
-              size="sm"
-              onClick={handleEditCancel}
-              disabled={loading}
-            >
-              취소
-            </Button>
-            <Button
-              size="sm"
-              onClick={handleEditSubmit}
-              loading={loading}
-              disabled={!editContent.trim()}
-            >
-              수정
-            </Button>
-          </Group>
-        </Stack>
-      ) : (
-        <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
-          {comment.content}
-        </Text>
+              {/* 답글 버튼 */}
+              {currentUserId && depth < maxDepth && (
+                <Button
+                  variant="subtle"
+                  size="xs"
+                  leftSection={<IconCornerDownRight size="0.8rem" />}
+                  onClick={() => setIsReplying(true)}
+                  color="blue"
+                >
+                  답글
+                </Button>
+              )}
+            </Group>
+          </>
+        )}
+
+        {/* 답글 작성 폼 */}
+        <Collapse in={isReplying}>
+          <Box mt="md" pt="md" style={{ borderTop: '1px solid var(--mantine-color-gray-3)' }}>
+            <Group gap="xs" mb="sm">
+              <Text size="sm" fw={600}>
+                {userProfile?.avatar || '👤'} {userProfile?.nickname || '사용자'}
+              </Text>
+              <Text size="xs" c="dimmed">답글 작성 중...</Text>
+            </Group>
+            
+            <Stack gap="sm">
+              <Textarea
+                placeholder={`${comment.author.nickname}님에게 답글을 남겨보세요...`}
+                value={replyContent}
+                onChange={(e) => setReplyContent(e.currentTarget.value)}
+                autosize
+                minRows={2}
+                maxRows={4}
+              />
+              <Group justify="space-between">
+                <Text size="xs" c="dimmed">
+                  {replyContent.length}/500자
+                </Text>
+                <Group gap="sm">
+                  <Button
+                    variant="subtle"
+                    size="sm"
+                    onClick={handleReplyCancel}
+                    disabled={replyLoading}
+                  >
+                    취소
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleReplySubmit}
+                    loading={replyLoading}
+                    disabled={!replyContent.trim() || replyContent.length > 500}
+                  >
+                    답글 작성
+                  </Button>
+                </Group>
+              </Group>
+            </Stack>
+          </Box>
+        </Collapse>
+      </Card>
+
+      {/* 대댓글 렌더링 */}
+      {comment.replies && comment.replies.length > 0 && (
+        <Box mt="sm">
+          {comment.replies.map((reply) => (
+            <Box key={reply.id} mt="sm">
+              <CommentItem
+                comment={reply}
+                currentUserId={currentUserId}
+                userProfile={userProfile}
+                postId={postId}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onReply={onReply}
+                onLike={onLike}
+                depth={depth + 1}
+              />
+            </Box>
+          ))}
+        </Box>
       )}
-    </Card>
+    </Box>
   );
 }
 
@@ -154,6 +340,18 @@ export function CommentSection({ postId }: CommentSectionProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [commentsLoading, setCommentsLoading] = useState(true);
+
+  // 총 댓글 수 계산 (대댓글 포함)
+  const getTotalCommentCount = (comments: Comment[]): number => {
+    let count = 0;
+    comments.forEach(comment => {
+      count += 1; // 해당 댓글
+      if (comment.replies) {
+        count += getTotalCommentCount(comment.replies); // 대댓글들
+      }
+    });
+    return count;
+  };
 
   // 실시간 댓글 구독
   useEffect(() => {
@@ -199,6 +397,26 @@ export function CommentSection({ postId }: CommentSectionProps) {
     }
   };
 
+  const handleReplyComment = async (parentId: string, content: string) => {
+    if (!currentUser || !userProfile) return;
+
+    try {
+      await createComment({
+        postId,
+        parentId,
+        content,
+        author: {
+          uid: currentUser.uid,
+          nickname: userProfile.nickname,
+          avatar: userProfile.avatar,
+        }
+      });
+    } catch (error) {
+      console.error('대댓글 작성 오류:', error);
+      throw error;
+    }
+  };
+
   const handleEditComment = async (commentId: string, content: string) => {
     try {
       await updateComment(commentId, content);
@@ -219,6 +437,22 @@ export function CommentSection({ postId }: CommentSectionProps) {
     }
   };
 
+  const handleCommentLike = async (commentId: string) => {
+    if (!currentUser) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      await toggleCommentLike(commentId, currentUser.uid);
+    } catch (error) {
+      console.error('댓글 좋아요 오류:', error);
+      alert('좋아요 처리 중 오류가 발생했습니다.');
+    }
+  };
+
+  const totalCommentsCount = getTotalCommentCount(comments);
+
   return (
     <Box>
       <Divider 
@@ -227,7 +461,7 @@ export function CommentSection({ postId }: CommentSectionProps) {
         label={
           <Group gap="xs">
             <IconMessage size="1rem" />
-            <Text fw={600}>댓글 ({comments.length})</Text>
+            <Text fw={600}>댓글 ({totalCommentsCount})</Text>
           </Group>
         } 
       />
@@ -299,8 +533,13 @@ export function CommentSection({ postId }: CommentSectionProps) {
               key={comment.id}
               comment={comment}
               currentUserId={currentUser?.uid}
+              userProfile={userProfile}
+              postId={postId}
               onEdit={handleEditComment}
               onDelete={handleDeleteComment}
+              onReply={handleReplyComment}
+              onLike={handleCommentLike}
+              depth={0}
             />
           ))}
         </Stack>

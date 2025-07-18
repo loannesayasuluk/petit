@@ -238,4 +238,44 @@ export const subscribeToPost = (
       callback(null);
     }
   });
+};
+
+// 실시간 게시물 구독 (카테고리별 필터링 지원)
+export const subscribeToPosts = (
+  callback: (posts: CommunityPost[]) => void,
+  category?: string,
+  limitCount: number = 10
+) => {
+  let q = query(
+    collection(db, COLLECTIONS.POSTS),
+    orderBy('createdAt', 'desc'),
+    limit(limitCount)
+  );
+
+  // 카테고리 필터 적용
+  if (category && category !== '전체') {
+    q = query(
+      collection(db, COLLECTIONS.POSTS),
+      where('category', '==', category),
+      orderBy('createdAt', 'desc'),
+      limit(limitCount)
+    );
+  }
+
+  return onSnapshot(q, (querySnapshot) => {
+    const posts: CommunityPost[] = [];
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      posts.push({
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt.toDate(),
+        updatedAt: data.updatedAt.toDate(),
+      } as CommunityPost);
+    });
+    
+    callback(posts);
+  }, (error) => {
+    console.error('실시간 게시물 구독 오류:', error);
+  });
 }; 

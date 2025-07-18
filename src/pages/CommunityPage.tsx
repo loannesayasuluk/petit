@@ -22,12 +22,19 @@ import {
   IconEye, 
   IconPencil, 
   IconHeartFilled,
-  IconAlertCircle 
+  IconAlertCircle,
+  IconHome,
+  IconStethoscope,
+  IconHammer,
+  IconBulb,
+  IconUrgent,
+  IconVideo,
+  IconCategory
 } from '@tabler/icons-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { useAuth } from '../contexts/AuthContext';
 import { useState, useEffect } from 'react';
-import { getPosts, toggleLike } from '../services/postService';
+import { getPosts, toggleLike, subscribeToPosts } from '../services/postService';
 import { getCommentCount } from '../services/commentService';
 import { PostWriteModal } from '../components/PostWriteModal';
 import { CommentSection } from '../components/CommentSection';
@@ -56,6 +63,18 @@ function getCategoryColor(category: string) {
   }
 }
 
+function getCategoryIcon(category: string) {
+  switch (category) {
+    case '일상': return IconHome;
+    case '건강': return IconStethoscope;
+    case 'DIY': return IconHammer;
+    case '꿀팁': return IconBulb;
+    case '응급': return IconUrgent;
+    case '영상': return IconVideo;
+    default: return IconCategory;
+  }
+}
+
 interface PostCardProps {
   post: CommunityPost;
   onLike: (postId: string) => void;
@@ -66,6 +85,21 @@ interface PostCardProps {
 function PostCard({ post, onLike, currentUserId, commentCount = 0 }: PostCardProps) {
   const isLiked = currentUserId ? post.likes.includes(currentUserId) : false;
   const [showComments, setShowComments] = useState(false);
+  const [likeLoading, setLikeLoading] = useState(false);
+
+  const handleLikeClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (likeLoading) return; // 더블 클릭 방지
+    
+    setLikeLoading(true);
+    try {
+      await onLike(post.id);
+    } finally {
+      // 시각적 피드백을 위해 약간의 딜레이
+      setTimeout(() => setLikeLoading(false), 300);
+    }
+  };
 
   return (
     <Card
@@ -153,18 +187,42 @@ function PostCard({ post, onLike, currentUserId, commentCount = 0 }: PostCardPro
             <ActionIcon
               variant="subtle"
               color={isLiked ? 'red' : 'gray'}
-              onClick={(e) => {
-                e.stopPropagation();
-                onLike(post.id);
+              onClick={handleLikeClick}
+              loading={likeLoading}
+              style={{
+                transform: isLiked ? 'scale(1.1)' : 'scale(1)',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                if (!likeLoading) {
+                  e.currentTarget.style.transform = 'scale(1.2)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = isLiked ? 'scale(1.1)' : 'scale(1)';
               }}
             >
               {isLiked ? (
-                <IconHeartFilled size={16} />
+                <IconHeartFilled 
+                  size={16} 
+                  style={{ 
+                    animation: isLiked ? 'heartBeat 0.6s ease-in-out' : undefined 
+                  }} 
+                />
               ) : (
                 <IconHeart size={16} />
               )}
             </ActionIcon>
-            <Text size="xs">{post.likes.length}</Text>
+            <Text 
+              size="xs" 
+              fw={isLiked ? 600 : 400}
+              c={isLiked ? 'red' : undefined}
+              style={{
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {post.likes.length}
+            </Text>
           </Group>
           <Group 
             gap="xs" 
@@ -205,113 +263,75 @@ export function CommunityPage() {
   const [lastDoc, setLastDoc] = useState<any>(null);
   const [hasMore, setHasMore] = useState(true);
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
+  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
 
-  const loadPosts = async (category: string = '전체', isInitial: boolean = true) => {
-    try {
-      setLoading(true);
-      setError('');
+  // 카테고리별 게시물 수 계산
+  const calculateCategoryCounts = (allPosts: CommunityPost[]) => {
+    const counts: Record<string, number> = { '전체': allPosts.length };
+    
+    POST_CATEGORIES.forEach(category => {
+      counts[category] = allPosts.filter(post => post.category === category).length;
+    });
+    
+    return counts;
+  };
 
-      let allPosts: CommunityPost[] = [];
-      let useFirebaseData = false;
-
-      // Firebase에서 실제 데이터 로딩 우선 시도
-      try {
-        const result = await getPosts(
-          10, 
-          isInitial ? undefined : lastDoc, 
-          category === '전체' ? undefined : category
-        );
-        allPosts = result.posts;
+  // 실시간 데이터 구독
+  useEffect(() => {
+    setLoading(true);
+    
+    // 실시간 게시물 구독
+    const unsubscribePosts = subscribeToPosts(
+      async (posts) => {
+        setPosts(posts);
         
-        if (allPosts.length > 0) {
-          // Firebase에서 데이터를 성공적으로 가져온 경우
-          useFirebaseData = true;
-          setLastDoc(result.lastDoc);
-          setHasMore(result.posts.length === 10);
-
-          if (isInitial) {
-            setPosts(allPosts);
-          } else {
-            setPosts(prev => [...prev, ...allPosts]);
+        if (posts.length > 0) {
+          // 카테고리 카운트 계산 (전체 데이터로)
+          try {
+            const allPostsResult = await getPosts(100);
+            setCategoryCounts(calculateCategoryCounts(allPostsResult.posts));
+          } catch (error) {
+            console.warn('카테고리 카운트 계산 실패:', error);
+            setCategoryCounts(calculateCategoryCounts(posts));
           }
 
           // 댓글 수 로딩
-          const commentCountPromises = allPosts.map(async (post) => {
-            const count = await getCommentCount(post.id);
-            return { postId: post.id, count };
-          });
+          try {
+            const commentCountPromises = posts.map(async (post) => {
+              const count = await getCommentCount(post.id);
+              return { postId: post.id, count };
+            });
 
-          const commentCountResults = await Promise.all(commentCountPromises);
-          const newCommentCounts: Record<string, number> = {};
-          commentCountResults.forEach(({ postId, count }) => {
-            newCommentCounts[postId] = count;
-          });
-
-          if (isInitial) {
+            const commentCountResults = await Promise.all(commentCountPromises);
+            const newCommentCounts: Record<string, number> = {};
+            commentCountResults.forEach(({ postId, count }) => {
+              newCommentCounts[postId] = count;
+            });
             setCommentCounts(newCommentCounts);
-          } else {
-            setCommentCounts(prev => ({ ...prev, ...newCommentCounts }));
+          } catch (error) {
+            console.warn('댓글 수 로딩 실패:', error);
           }
-        }
-      } catch (firestoreError) {
-        console.log('Firestore 연결 실패, 로컬 데이터 사용:', firestoreError);
-      }
-
-      // Firebase 데이터가 없거나 실패한 경우 로컬 데이터 fallback
-      if (!useFirebaseData) {
-        console.log('🔄 Firebase 데이터가 없어서 로컬 데이터를 표시합니다. window.uploadSampleData()를 실행하세요.');
-        
-        const filteredSamplePosts = category === '전체' 
-          ? samplePosts 
-          : samplePosts.filter(post => post.category === category);
-        
-        allPosts = filteredSamplePosts;
-        
-        if (isInitial) {
-          setPosts(allPosts);
         } else {
-          setPosts(prev => [...prev, ...allPosts]);
+          // 데이터가 없는 경우
+          setCategoryCounts({ '전체': 0, '일상': 0, '건강': 0, 'DIY': 0, '꿀팁': 0, '응급': 0, '영상': 0, '기타': 0 });
+          setCommentCounts({});
         }
+        
+        setLoading(false);
+        setError('');
+      },
+      selectedCategory === '전체' ? undefined : selectedCategory,
+      20 // 더 많은 게시물 로딩
+    );
 
-        // 샘플 데이터 댓글 수 (고정값)
-        const newCommentCounts: Record<string, number> = {
-          'sample-post-1': 8,
-          'sample-post-2': 15,
-          'sample-post-3': 6,
-          'sample-post-4': 12,
-          'sample-post-5': 23,
-          'sample-post-6': 4
-        };
-
-        if (isInitial) {
-          setCommentCounts(newCommentCounts);
-        } else {
-          setCommentCounts(prev => ({ ...prev, ...newCommentCounts }));
-        }
-
-        setHasMore(false); // 로컬 데이터는 더보기 없음
-      }
-      
-    } catch (err) {
-      console.error('게시물 로딩 오류:', err);
-      setError('게시물을 불러오는 중 오류가 발생했습니다.');
-      // 에러 발생 시에도 로컬 데이터 표시
-      const filteredSamplePosts = category === '전체' 
-        ? samplePosts 
-        : samplePosts.filter(post => post.category === category);
-      setPosts(filteredSamplePosts);
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => {
+      unsubscribePosts();
+    };
+  }, [selectedCategory]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
-    setPosts([]);
-    setCommentCounts({});
-    setLastDoc(null);
-    setHasMore(true);
-    loadPosts(category, true);
+    // 실시간 구독이 useEffect에서 처리되므로 별도 로딩 불필요
   };
 
   const handleLike = async (postId: string) => {
@@ -321,54 +341,72 @@ export function CommunityPage() {
     }
 
     try {
-      // 로컬 데이터인지 확인 (샘플 데이터 fallback인 경우)
-      if (postId.startsWith('sample-')) {
-        // 로컬 데이터는 상태만 업데이트 (Firebase 호출 없음)
-        setPosts(prev => prev.map(post => {
-          if (post.id === postId) {
-            const isLiked = post.likes.includes(currentUser.uid);
-            return {
-              ...post,
-              likes: isLiked 
-                ? post.likes.filter(uid => uid !== currentUser.uid)
-                : [...post.likes, currentUser.uid]
-            };
-          }
-          return post;
-        }));
-      } else {
-        // Firebase 데이터 - 실제 서버 업데이트
-        await toggleLike(postId, currentUser.uid);
-        
-        // 로컬 상태도 즉시 업데이트 (UX 향상)
-        setPosts(prev => prev.map(post => {
-          if (post.id === postId) {
-            const isLiked = post.likes.includes(currentUser.uid);
-            return {
-              ...post,
-              likes: isLiked 
-                ? post.likes.filter(uid => uid !== currentUser.uid)
-                : [...post.likes, currentUser.uid]
-            };
-          }
-          return post;
-        }));
-      }
+      // Firebase 데이터만 처리 (로컬 데이터 분기 제거)
+      await toggleLike(postId, currentUser.uid);
+      
+      // 로컬 상태 즉시 업데이트 (UX 향상)
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          const isLiked = post.likes.includes(currentUser.uid);
+          return {
+            ...post,
+            likes: isLiked 
+              ? post.likes.filter(uid => uid !== currentUser.uid)
+              : [...post.likes, currentUser.uid]
+          };
+        }
+        return post;
+      }));
     } catch (error) {
       console.error('좋아요 오류:', error);
-      alert('좋아요 처리 중 오류가 발생했습니다.');
+      alert(`좋아요 처리 중 오류가 발생했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
     }
   };
 
   const handlePostSuccess = () => {
     setWriteModalOpened(false);
-    // 새 글이 작성되면 목록 새로고침
-    loadPosts(selectedCategory, true);
+    // 실시간 구독으로 자동 업데이트되므로 별도 새로고침 불필요
   };
 
-  useEffect(() => {
-    loadPosts('전체', true);
-  }, []);
+  const renderCategoryButton = (category: string) => {
+    const IconComponent = category === '전체' ? IconCategory : getCategoryIcon(category);
+    const isSelected = category === selectedCategory;
+    const count = categoryCounts[category] || 0;
+
+    return (
+      <Button
+        key={category}
+        variant={isSelected ? 'filled' : 'light'}
+        size="sm"
+        radius="xl"
+        leftSection={<IconComponent size="1rem" />}
+        rightSection={
+          <Badge 
+            size="xs" 
+            variant={isSelected ? 'light' : 'outline'}
+            color={isSelected ? 'white' : getCategoryColor(category)}
+          >
+            {count}
+          </Badge>
+        }
+        onClick={() => handleCategoryChange(category)}
+        style={{
+          transition: 'all 0.2s ease',
+          transform: isSelected ? 'scale(1.05)' : 'scale(1)',
+        }}
+        onMouseEnter={(e) => {
+          if (!isSelected) {
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = isSelected ? 'scale(1.05)' : 'scale(1)';
+        }}
+      >
+        {category}
+      </Button>
+    );
+  };
 
   return (
     <Container size="lg" py="xl">
@@ -387,16 +425,8 @@ export function CommunityPage() {
       <Group justify="space-between" mb="xl">
         <Group gap="sm">
           {['전체', ...POST_CATEGORIES].map((category) => (
-            <Button
-              key={category}
-              variant={category === selectedCategory ? 'filled' : 'light'}
-              size="sm"
-              radius="xl"
-              onClick={() => handleCategoryChange(category)}
-            >
-              {category}
-            </Button>
-          ))}
+            renderCategoryButton(category))
+          )}
         </Group>
         {currentUser && (
           <Button 
@@ -464,21 +494,10 @@ export function CommunityPage() {
               />
             ))}
             
-            {/* 더 보기 버튼 */}
-            {hasMore && !loading && (
-              <Center mt="xl">
-                <Button 
-                  variant="outline" 
-                  onClick={() => loadPosts(selectedCategory, false)}
-                >
-                  더 보기
-                </Button>
-              </Center>
-            )}
-            
-            {loading && posts.length > 0 && (
-              <Center py="md">
-                <Loader size="sm" />
+            {/* 실시간 구독으로 더 보기 버튼 불필요 */}
+            {loading && (
+              <Center py="xl">
+                <Loader size="md" />
               </Center>
             )}
           </Stack>

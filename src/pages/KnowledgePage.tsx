@@ -13,14 +13,20 @@ import {
   Loader,
   Alert,
   Image,
-  SimpleGrid
+  SimpleGrid,
+  ActionIcon
 } from '@mantine/core';
 import { 
   IconHeart, 
   IconEye, 
   IconBook, 
   IconHeartFilled,
-  IconAlertCircle 
+  IconAlertCircle,
+  IconStethoscope,
+  IconHome,
+  IconShoppingCart,
+  IconFirstAidKit,
+  IconCategory
 } from '@tabler/icons-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { useState, useEffect } from 'react';
@@ -51,6 +57,16 @@ function getCategoryColor(category: string) {
   }
 }
 
+function getCategoryIcon(category: string) {
+  switch (category) {
+    case '사육법': return IconHome;
+    case '건강관리': return IconStethoscope;
+    case '용품리뷰': return IconShoppingCart;
+    case '응급처치': return IconFirstAidKit;
+    default: return IconCategory;
+  }
+}
+
 interface ArticleCardProps {
   article: KnowledgeArticle;
   onLike: (articleId: string) => void;
@@ -59,6 +75,21 @@ interface ArticleCardProps {
 
 function ArticleCard({ article, onLike, currentUserId }: ArticleCardProps) {
   const isLiked = currentUserId ? article.likes.includes(currentUserId) : false;
+  const [likeLoading, setLikeLoading] = useState(false);
+
+  const handleLikeClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (likeLoading) return; // 더블 클릭 방지
+    
+    setLikeLoading(true);
+    try {
+      await onLike(article.id);
+    } finally {
+      // 시각적 피드백을 위해 약간의 딜레이
+      setTimeout(() => setLikeLoading(false), 300);
+    }
+  };
 
   return (
     <Card
@@ -145,29 +176,45 @@ function ArticleCard({ article, onLike, currentUserId }: ArticleCardProps) {
             <Text size="xs">{article.viewCount}</Text>
           </Group>
           <Group gap="xs">
-            <Box
-              component="button"
+            <ActionIcon
+              variant="subtle"
+              color={isLiked ? 'red' : 'gray'}
+              onClick={handleLikeClick}
+              loading={likeLoading}
               style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: 0,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
+                transform: isLiked ? 'scale(1.1)' : 'scale(1)',
+                transition: 'all 0.2s ease',
               }}
-              onClick={(e) => {
-                e.stopPropagation();
-                onLike(article.id);
+              onMouseEnter={(e) => {
+                if (!likeLoading) {
+                  e.currentTarget.style.transform = 'scale(1.2)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = isLiked ? 'scale(1.1)' : 'scale(1)';
               }}
             >
               {isLiked ? (
-                <IconHeartFilled size={16} color="#ff6b6b" />
+                <IconHeartFilled 
+                  size={16} 
+                  style={{ 
+                    animation: isLiked ? 'heartBeat 0.6s ease-in-out' : undefined 
+                  }} 
+                />
               ) : (
-                <IconHeart size={16} color="#868e96" />
+                <IconHeart size={16} />
               )}
-            </Box>
-            <Text size="xs">{article.likes.length}</Text>
+            </ActionIcon>
+            <Text 
+              size="xs" 
+              fw={isLiked ? 600 : 400}
+              c={isLiked ? 'red' : undefined}
+              style={{
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {article.likes.length}
+            </Text>
           </Group>
         </Group>
       </Group>
@@ -182,52 +229,62 @@ export function KnowledgePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
+
+  // 카테고리별 게시물 수 계산
+  const calculateCategoryCounts = (allArticles: KnowledgeArticle[]) => {
+    const counts: Record<string, number> = { '전체': allArticles.length };
+    
+    ARTICLE_CATEGORIES.forEach(category => {
+      counts[category] = allArticles.filter(article => article.category === category).length;
+    });
+    
+    return counts;
+  };
 
   const loadArticles = async (category: string = '전체') => {
     try {
       setLoading(true);
       setError('');
 
-      let allArticles: KnowledgeArticle[] = [];
-      let useFirebaseData = false;
-
-      // Firebase에서 실제 데이터 로딩 우선 시도
-      try {
-        const result = await getKnowledgeArticles(
-          20, 
-          undefined, 
-          category === '전체' ? undefined : category
-        );
-        allArticles = result.articles;
-        
-        if (allArticles.length > 0) {
-          // Firebase에서 데이터를 성공적으로 가져온 경우
-          useFirebaseData = true;
-          setArticles(allArticles);
-        }
-      } catch (firestoreError) {
-        console.log('Firestore 연결 실패, 로컬 데이터 사용:', firestoreError);
-      }
-
-      // Firebase 데이터가 없거나 실패한 경우 로컬 데이터 fallback
-      if (!useFirebaseData) {
-        console.log('🔄 Firebase 데이터가 없어서 로컬 데이터를 표시합니다. window.uploadSampleData()를 실행하세요.');
-        
-        const filteredSampleArticles = category === '전체' 
-          ? sampleKnowledgeArticles 
-          : sampleKnowledgeArticles.filter(article => article.category === category);
-        
-        allArticles = filteredSampleArticles;
+      // Firebase에서 데이터 로딩 (fallback 제거)
+      const result = await getKnowledgeArticles(
+        20, 
+        undefined, 
+        category === '전체' ? undefined : category
+      );
+      
+      const allArticles = result.articles;
+      
+      if (allArticles.length > 0) {
+        // Firebase에서 데이터를 성공적으로 가져온 경우
         setArticles(allArticles);
+        
+        // 전체 게시물로 카테고리 카운트 계산
+        if (category === '전체') {
+          setCategoryCounts(calculateCategoryCounts(allArticles));
+        } else {
+          // 다른 카테고리 선택 시 전체 데이터로 카운트 재계산
+          const allArticlesResult = await getKnowledgeArticles(100);
+          setCategoryCounts(calculateCategoryCounts(allArticlesResult.articles));
+        }
+      } else {
+        // Firebase에 데이터가 없는 경우
+        setArticles([]);
+        setCategoryCounts({ '전체': 0, '사육법': 0, '건강관리': 0, '용품리뷰': 0, '응급처치': 0, '기타': 0 });
+        
+        // 데이터가 없을 때 사용자에게 안내
+        if (category === '전체') {
+          setError('아직 지식백과가 없습니다. 전문가들의 유용한 정보를 기다려주세요! 또는 관리자가 샘플 데이터를 업로드해야 합니다.');
+        }
       }
     } catch (err) {
       console.error('지식백과 로딩 오류:', err);
-      setError('지식백과를 불러오는 중 오류가 발생했습니다.');
-      // 에러 발생 시에도 로컬 데이터 표시
-      const filteredSampleArticles = category === '전체' 
-        ? sampleKnowledgeArticles 
-        : sampleKnowledgeArticles.filter(article => article.category === category);
-      setArticles(filteredSampleArticles);
+      setError(`Firebase 연결 오류: ${err instanceof Error ? err.message : '알 수 없는 오류'}. 관리자에게 문의하세요.`);
+      
+      // 에러 발생 시 빈 상태 설정
+      setArticles([]);
+      setCategoryCounts({ '전체': 0, '사육법': 0, '건강관리': 0, '용품리뷰': 0, '응급처치': 0, '기타': 0 });
     } finally {
       setLoading(false);
     }
@@ -245,43 +302,66 @@ export function KnowledgePage() {
     }
 
     try {
-      // 로컬 데이터인지 확인 (샘플 데이터 fallback인 경우)
-      if (articleId.startsWith('sample-')) {
-        // 로컬 데이터는 상태만 업데이트 (Firebase 호출 없음)
-        setArticles(prev => prev.map(article => {
-          if (article.id === articleId) {
-            const isLiked = article.likes.includes(currentUser.uid);
-            return {
-              ...article,
-              likes: isLiked 
-                ? article.likes.filter(uid => uid !== currentUser.uid)
-                : [...article.likes, currentUser.uid]
-            };
-          }
-          return article;
-        }));
-      } else {
-        // Firebase 데이터 - 실제 서버 업데이트
-        await toggleKnowledgeLike(articleId, currentUser.uid);
-        
-        // 로컬 상태도 즉시 업데이트 (UX 향상)
-        setArticles(prev => prev.map(article => {
-          if (article.id === articleId) {
-            const isLiked = article.likes.includes(currentUser.uid);
-            return {
-              ...article,
-              likes: isLiked 
-                ? article.likes.filter(uid => uid !== currentUser.uid)
-                : [...article.likes, currentUser.uid]
-            };
-          }
-          return article;
-        }));
-      }
+      // Firebase 데이터만 처리 (로컬 데이터 분기 제거)
+      await toggleKnowledgeLike(articleId, currentUser.uid);
+      
+      // 로컬 상태 즉시 업데이트 (UX 향상)
+      setArticles(prev => prev.map(article => {
+        if (article.id === articleId) {
+          const isLiked = article.likes.includes(currentUser.uid);
+          return {
+            ...article,
+            likes: isLiked 
+              ? article.likes.filter(uid => uid !== currentUser.uid)
+              : [...article.likes, currentUser.uid]
+          };
+        }
+        return article;
+      }));
     } catch (error) {
       console.error('좋아요 처리 오류:', error);
-      alert('좋아요 처리 중 오류가 발생했습니다.');
+      alert(`좋아요 처리 중 오류가 발생했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
     }
+  };
+
+  const renderCategoryButton = (category: string) => {
+    const IconComponent = category === '전체' ? IconCategory : getCategoryIcon(category);
+    const isSelected = category === selectedCategory;
+    const count = categoryCounts[category] || 0;
+
+    return (
+      <Button
+        key={category}
+        variant={isSelected ? 'filled' : 'light'}
+        size="sm"
+        radius="xl"
+        leftSection={<IconComponent size="1rem" />}
+        rightSection={
+          <Badge 
+            size="xs" 
+            variant={isSelected ? 'light' : 'outline'}
+            color={isSelected ? 'white' : getCategoryColor(category)}
+          >
+            {count}
+          </Badge>
+        }
+        onClick={() => handleCategoryChange(category)}
+        style={{
+          transition: 'all 0.2s ease',
+          transform: isSelected ? 'scale(1.05)' : 'scale(1)',
+        }}
+        onMouseEnter={(e) => {
+          if (!isSelected) {
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = isSelected ? 'scale(1.05)' : 'scale(1)';
+        }}
+      >
+        {category}
+      </Button>
+    );
   };
 
   useEffect(() => {
@@ -304,17 +384,8 @@ export function KnowledgePage() {
       {/* 카테고리 필터 */}
       <Group justify="center" mb="xl">
         <Group gap="sm">
-          {['전체', ...ARTICLE_CATEGORIES].map((category) => (
-            <Button
-              key={category}
-              variant={category === selectedCategory ? 'filled' : 'light'}
-              size="sm"
-              radius="xl"
-              onClick={() => handleCategoryChange(category)}
-            >
-              {category}
-            </Button>
-          ))}
+          {['전체', ...ARTICLE_CATEGORIES].map((category) => 
+            renderCategoryButton(category))}
         </Group>
       </Group>
 

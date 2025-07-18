@@ -9,20 +9,24 @@ import {
   orderBy, 
   where,
   Timestamp,
-  onSnapshot
+  onSnapshot,
+  getDoc,
+  arrayRemove,
+  arrayUnion
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { Comment } from '../types';
 import { COLLECTIONS } from '../types';
 
-// 댓글 생성
+// 댓글 생성 (대댓글 지원)
 export const createComment = async (
-  commentData: Omit<Comment, 'id' | 'createdAt' | 'updatedAt'>
+  commentData: Omit<Comment, 'id' | 'createdAt' | 'updatedAt' | 'replies' | 'likes'>
 ): Promise<string> => {
   try {
     const now = new Date();
     const commentToSave = {
       ...commentData,
+      likes: [], // 기본값으로 빈 배열 설정
       createdAt: Timestamp.fromDate(now),
       updatedAt: Timestamp.fromDate(now)
     };
@@ -35,7 +39,7 @@ export const createComment = async (
   }
 };
 
-// 특정 게시물의 댓글 목록 조회
+// 특정 게시물의 댓글 목록 조회 (대댓글 구조화)
 export const getCommentsByPostId = async (postId: string): Promise<Comment[]> => {
   try {
     const q = query(
@@ -45,11 +49,11 @@ export const getCommentsByPostId = async (postId: string): Promise<Comment[]> =>
     );
 
     const snapshot = await getDocs(q);
-    const comments: Comment[] = [];
+    const allComments: Comment[] = [];
     
     snapshot.forEach((doc) => {
       const data = doc.data();
-      comments.push({
+      allComments.push({
         id: doc.id,
         ...data,
         createdAt: data.createdAt.toDate(),
@@ -57,11 +61,39 @@ export const getCommentsByPostId = async (postId: string): Promise<Comment[]> =>
       } as Comment);
     });
 
-    return comments;
+    // 댓글을 중첩 구조로 변환
+    return organizeCommentsHierarchy(allComments);
   } catch (error) {
     console.error('댓글 목록 조회 오류:', error);
     throw error;
   }
+};
+
+// 댓글을 중첩 구조로 조직화
+const organizeCommentsHierarchy = (comments: Comment[]): Comment[] => {
+  const commentMap = new Map<string, Comment>();
+  const rootComments: Comment[] = [];
+
+  // 모든 댓글을 맵에 저장하고 replies 배열 초기화
+  comments.forEach(comment => {
+    commentMap.set(comment.id, { ...comment, replies: [] });
+  });
+
+  // 댓글을 부모-자식 관계로 조직화
+  comments.forEach(comment => {
+    const commentWithReplies = commentMap.get(comment.id)!;
+    
+    if (comment.parentId && commentMap.has(comment.parentId)) {
+      // 대댓글인 경우 부모 댓글의 replies에 추가
+      const parent = commentMap.get(comment.parentId)!;
+      parent.replies!.push(commentWithReplies);
+    } else {
+      // 최상위 댓글인 경우 루트 댓글 목록에 추가
+      rootComments.push(commentWithReplies);
+    }
+  });
+
+  return rootComments;
 };
 
 // 댓글 수정
@@ -108,7 +140,7 @@ export const getCommentCount = async (postId: string): Promise<number> => {
   }
 };
 
-// 실시간 댓글 구독
+// 실시간 댓글 구독 (대댓글 구조화)
 export const subscribeToComments = (
   postId: string, 
   callback: (comments: Comment[]) => void
@@ -120,11 +152,11 @@ export const subscribeToComments = (
   );
   
   return onSnapshot(q, (snapshot) => {
-    const comments: Comment[] = [];
+    const allComments: Comment[] = [];
     
     snapshot.forEach((doc) => {
       const data = doc.data();
-      comments.push({
+      allComments.push({
         id: doc.id,
         ...data,
         createdAt: data.createdAt.toDate(),
@@ -132,6 +164,38 @@ export const subscribeToComments = (
       } as Comment);
     });
 
-    callback(comments);
+    // 댓글을 중첩 구조로 변환하여 콜백 호출
+    const organizedComments = organizeCommentsHierarchy(allComments);
+    callback(organizedComments);
   });
+};
+
+// 댓글 좋아요 토글
+export const toggleCommentLike = async (commentId: string, userId: string): Promise<void> => {
+  try {
+    const docRef = doc(db, COLLECTIONS.COMMENTS, commentId);
+    const docSnap = await getDoc(docRef);
+    
+    if (!docSnap.exists()) {
+      throw new Error('댓글을 찾을 수 없습니다.');
+    }
+
+    const comment = docSnap.data() as Comment;
+    const isLiked = comment.likes?.includes(userId);
+
+    if (isLiked) {
+      // 좋아요 취소
+      await updateDoc(docRef, {
+        likes: arrayRemove(userId)
+      });
+    } else {
+      // 좋아요 추가
+      await updateDoc(docRef, {
+        likes: arrayUnion(userId)
+      });
+    }
+  } catch (error) {
+    console.error('댓글 좋아요 토글 오류:', error);
+    throw error;
+  }
 }; 

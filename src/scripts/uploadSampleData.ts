@@ -72,6 +72,7 @@ export async function uploadSampleComments() {
   console.log('🔄 댓글 샘플 데이터 업로드 중...');
   
   const sampleComments = [
+    // 기본 댓글들
     {
       id: 'comment-1',
       postId: 'sample-post-1',
@@ -81,6 +82,7 @@ export async function uploadSampleComments() {
         nickname: '앵무박사',
         avatar: '🦜'
       },
+      likes: ['sample-user-1', 'sample-user-4'], // 2개의 좋아요
       createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1시간 전
       updatedAt: new Date(Date.now() - 1 * 60 * 60 * 1000)
     },
@@ -93,9 +95,55 @@ export async function uploadSampleComments() {
         nickname: '밤송이네',
         avatar: '🦔'
       },
+      likes: ['sample-user-1'], // 1개의 좋아요
       createdAt: new Date(Date.now() - 30 * 60 * 1000), // 30분 전
       updatedAt: new Date(Date.now() - 30 * 60 * 1000)
     },
+    // 대댓글들
+    {
+      id: 'comment-reply-1',
+      postId: 'sample-post-1',
+      parentId: 'comment-1', // comment-1에 대한 답글
+      content: '맞아요! 처음에는 무서워하다가 점점 가까워지는 과정이 정말 소중해요 ✨',
+      author: {
+        uid: 'sample-user-1',
+        nickname: '햄찌사랑',
+        avatar: '🐹'
+      },
+      likes: ['sample-user-2'], // 1개의 좋아요
+      createdAt: new Date(Date.now() - 50 * 60 * 1000), // 50분 전
+      updatedAt: new Date(Date.now() - 50 * 60 * 1000)
+    },
+    {
+      id: 'comment-reply-2',
+      postId: 'sample-post-1',
+      parentId: 'comment-1', // comment-1에 대한 또 다른 답글
+      content: '앵무박사님도 햄스터 키우시는군요! 혹시 어떤 종인지 궁금해요 🐹',
+      author: {
+        uid: 'sample-user-5',
+        nickname: '토순이맘',
+        avatar: '🐰'
+      },
+      likes: [], // 좋아요 없음
+      createdAt: new Date(Date.now() - 40 * 60 * 1000), // 40분 전
+      updatedAt: new Date(Date.now() - 40 * 60 * 1000)
+    },
+    // 3차 대댓글 (대댓글에 대한 답글)
+    {
+      id: 'comment-reply-3',
+      postId: 'sample-post-1',
+      parentId: 'comment-reply-2', // comment-reply-2에 대한 답글
+      content: '저는 골든 햄스터 키워요! 정말 온순하고 사람을 잘 따라요 😊',
+      author: {
+        uid: 'sample-user-2',
+        nickname: '앵무박사',
+        avatar: '🦜'
+      },
+      likes: ['sample-user-5', 'sample-user-1'], // 2개의 좋아요
+      createdAt: new Date(Date.now() - 35 * 60 * 1000), // 35분 전
+      updatedAt: new Date(Date.now() - 35 * 60 * 1000)
+    },
+    // 다른 게시물의 댓글들
     {
       id: 'comment-3',
       postId: 'sample-post-2',
@@ -105,6 +153,7 @@ export async function uploadSampleComments() {
         nickname: '앵무박사',
         avatar: '🦜'
       },
+      likes: ['sample-user-1', 'sample-user-3', 'sample-user-4'], // 3개의 좋아요
       createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2시간 전
       updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000)
     },
@@ -117,6 +166,7 @@ export async function uploadSampleComments() {
         nickname: '햄찌사랑',
         avatar: '🐹'
       },
+      likes: ['sample-user-3'], // 1개의 좋아요
       createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4시간 전
       updatedAt: new Date(Date.now() - 4 * 60 * 60 * 1000)
     },
@@ -129,8 +179,24 @@ export async function uploadSampleComments() {
         nickname: '앵무박사',
         avatar: '🦜'
       },
+      likes: ['sample-user-5', 'sample-user-1', 'sample-user-4'], // 3개의 좋아요
       createdAt: new Date(Date.now() - 20 * 60 * 60 * 1000), // 20시간 전
       updatedAt: new Date(Date.now() - 20 * 60 * 60 * 1000)
+    },
+    // 응급상황 게시물에 대한 답글들
+    {
+      id: 'comment-reply-4',
+      postId: 'sample-post-5',
+      parentId: 'comment-5',
+      content: '정말 맞는 말씀이에요. 토끼는 소화기관이 민감해서 음식을 안 먹으면 정말 위험해요 😰',
+      author: {
+        uid: 'sample-user-5',
+        nickname: '토순이맘',
+        avatar: '🐰'
+      },
+      likes: ['sample-user-2'], // 1개의 좋아요
+      createdAt: new Date(Date.now() - 19 * 60 * 60 * 1000), // 19시간 전
+      updatedAt: new Date(Date.now() - 19 * 60 * 60 * 1000)
     }
   ];
 

@@ -36,6 +36,9 @@ export interface Comment {
     nickname: string;
     avatar?: string;
   };
+  parentId?: string; // 대댓글인 경우 부모 댓글 ID
+  replies?: Comment[]; // 대댓글 목록 (UI에서만 사용)
+  likes: string[]; // 좋아요한 사용자들의 UID 배열
   createdAt: Date;
   updatedAt: Date;
 }
