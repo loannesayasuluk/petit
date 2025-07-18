@@ -3,7 +3,7 @@ import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { useState, useEffect } from 'react';
 import { getPosts } from '../services/postService';
 import type { CommunityPost } from '../types';
-import { samplePosts, shouldShowSampleData } from '../data/sampleData';
+import { samplePosts } from '../data/sampleData';
 
 function WelcomeSection() {
   const { ref, isVisible } = useScrollAnimation();

@@ -33,7 +33,7 @@ import { PostWriteModal } from '../components/PostWriteModal';
 import { CommentSection } from '../components/CommentSection';
 import type { CommunityPost } from '../types';
 import { POST_CATEGORIES } from '../types';
-import { samplePosts, shouldShowSampleData } from '../data/sampleData';
+import { samplePosts } from '../data/sampleData';
 
 function formatTimeAgo(date: Date): string {
   const now = new Date();

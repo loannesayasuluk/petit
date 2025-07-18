@@ -27,7 +27,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import type { KnowledgeArticle } from '../types';
 import { ARTICLE_CATEGORIES } from '../types';
-import { sampleKnowledgeArticles, shouldShowSampleData } from '../data/sampleData';
+import { sampleKnowledgeArticles } from '../data/sampleData';
 import { getKnowledgeArticles, toggleKnowledgeLike } from '../services/knowledgeService';
 
 function formatTimeAgo(date: Date): string {
