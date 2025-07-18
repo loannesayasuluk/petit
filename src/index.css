@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Square+Round:wght@400;700;800&display=swap');
+
+/* 웹폰트 직접 로드 및 강제 적용 */
+@font-face {
+  font-family: 'NanumSquareRound';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 모든 요소에 강제 적용 */
+* {
+  font-family: 'NanumSquareRound', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+body {
+  font-family: 'NanumSquareRound', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'NanumSquareRound', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-weight: 800 !important;
+}
+
+/* Mantine 컴포넌트 강제 적용 */
+.mantine-Title-root,
+.mantine-Text-root,
+.mantine-Button-root,
+.mantine-Card-root {
+  font-family: 'NanumSquareRound', -apple-system, BlinkMacSystemFont, sans-serif !important;
+} 
