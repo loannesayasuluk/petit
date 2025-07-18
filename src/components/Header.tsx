@@ -1,4 +1,4 @@
-import { Group, Button, Anchor, Box, Title, ActionIcon, Menu, Text } from '@mantine/core';
+import { Group, Button, Anchor, Box, ActionIcon, Menu, Text } from '@mantine/core';
 import { IconPencil, IconLogin, IconUserPlus, IconBell, IconLogout, IconUser, IconSettings } from '@tabler/icons-react';
 import { useState } from 'react';
 import { AuthModal } from './AuthModal';
