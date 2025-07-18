@@ -40,7 +40,6 @@ import { PostWriteModal } from '../components/PostWriteModal';
 import { CommentSection } from '../components/CommentSection';
 import type { CommunityPost } from '../types';
 import { POST_CATEGORIES } from '../types';
-import { samplePosts } from '../data/sampleData';
 
 function formatTimeAgo(date: Date): string {
   const now = new Date();
@@ -260,8 +259,6 @@ export function CommunityPage() {
   const [error, setError] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [writeModalOpened, setWriteModalOpened] = useState(false);
-  const [lastDoc, setLastDoc] = useState<any>(null);
-  const [hasMore, setHasMore] = useState(true);
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
 

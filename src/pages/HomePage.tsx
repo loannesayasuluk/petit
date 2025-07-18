@@ -1,9 +1,9 @@
 import { Title, Text, Button, Group, Box, Grid, Image, Card, SimpleGrid, Divider, Loader, Center, Stack } from '@mantine/core';
+import { IconHeart, IconMessage, IconEye, IconPencil } from '@tabler/icons-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { useState, useEffect } from 'react';
 import { getPosts } from '../services/postService';
 import type { CommunityPost } from '../types';
-import { samplePosts } from '../data/sampleData';
 
 function WelcomeSection() {
   const { ref, isVisible } = useScrollAnimation();
