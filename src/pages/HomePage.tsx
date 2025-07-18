@@ -49,14 +49,16 @@ function WelcomeSection() {
       <Grid.Col span={{ base: 12, md: 6 }}>
         <Image 
           radius="xl" 
-          src="https://images.unsplash.com/photo-1583337130417-2346a1be284c?q=80&w=1887" 
+          src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?q=80&w=600&auto=format&fit=crop" 
+          alt="귀여운 애완동물들이 함께 있는 모습"
           style={{ 
             transition: 'all 0.3s ease',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            objectFit: 'cover'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.02)';
-            e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
+            e.currentTarget.style.boxShadow = '0 10px 30px rgba(241, 114, 88, 0.2)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1)';
