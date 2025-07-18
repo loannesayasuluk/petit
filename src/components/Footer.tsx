@@ -10,8 +10,8 @@ export function Footer() {
             <Stack gap="md" style={{ flex: 1 }}>
               <Text fw={800} fz="lg" c="warm-coral.6">Petit</Text>
               <Text size="sm" c="dimmed" maw={300}>
-                우리 애기들을 위한 행복한 소통 공간<br/>
-                전문가와 매니아들이 함께 만드는 반려동물 커뮤니티
+                초보 집사를 위한 전문 케어 플랫폼<br/>
+                전문가 검증 정보와 실전 경험으로 만드는 안심 케어 가이드
               </Text>
             </Stack>
             

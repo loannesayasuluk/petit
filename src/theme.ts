@@ -26,6 +26,21 @@ const neutralGray: MantineColorsTuple = [
   '#737373', '#525252', '#404040', '#262626', '#171717'
 ];
 
+const healthRed: MantineColorsTuple = [
+  '#fef2f2', '#fee2e2', '#fecaca', '#fca5a5', '#f87171',
+  '#ef4444', '#dc2626', '#b91c1c', '#991b1b', '#7f1d1d'
+];
+
+const safetyOrange: MantineColorsTuple = [
+  '#fff7ed', '#ffedd5', '#fed7aa', '#fdba74', '#fb923c',
+  '#f97316', '#ea580c', '#c2410c', '#9a3412', '#7c2d12'
+];
+
+const comfortPurple: MantineColorsTuple = [
+  '#faf5ff', '#f3e8ff', '#e9d5ff', '#d8b4fe', '#c084fc',
+  '#a855f7', '#9333ea', '#7c3aed', '#6d28d9', '#5b21b6'
+];
+
 export const theme = createTheme({
   colors: { 
     'warm-coral': warmCoral,
@@ -33,6 +48,9 @@ export const theme = createTheme({
     'sunny-yellow': sunnyYellow,
     'fresh-green': freshGreen,
     'neutral-gray': neutralGray,
+    'health-red': healthRed,
+    'safety-orange': safetyOrange,
+    'comfort-purple': comfortPurple,
   },
   primaryColor: 'warm-coral',
 

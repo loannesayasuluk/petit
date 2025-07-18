@@ -21,28 +21,34 @@ function WelcomeSection() {
     >
       <Grid.Col span={{ base: 12, md: 6 }}>
         <Title order={1} fz={{ base: '2.5rem', md: '3.5rem' }} lh={1.3} fw={800}>
-          우리 애기들을 위한<br/>행복한 소통 공간
+          초보 집사도 안심하는<br/>우리 애기 케어 가이드
         </Title>
         <Text c="dimmed" mt="lg" mb="xl" fz="lg">
-          '프티'에서 소중한 아이들의 순간을 공유하고, 더 건강하게 키울 수 있는 알찬 정보들을 만나보세요.
+          전문가 검증 정보와 경험 많은 집사들의 실전 노하우로<br/>
+          처음 키우는 애기도 건강하고 행복하게! 🐾
         </Text>
         <Group>
           <Button 
             size="lg" 
             style={{ 
-              transition: 'all 0.3s ease',
-              transform: 'scale(1)'
+              background: 'linear-gradient(135deg, #f17258 0%, #facc15 100%)',
+              border: 'none',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              transform: 'scale(1)',
+              boxShadow: '0 4px 15px rgba(241, 114, 88, 0.3)',
+              position: 'relative',
+              overflow: 'hidden'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'scale(1.05)';
-              e.currentTarget.style.boxShadow = 'var(--mantine-shadow-lg)';
+              e.currentTarget.style.transform = 'scale(1.05) translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 8px 25px rgba(241, 114, 88, 0.4)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.boxShadow = 'var(--mantine-shadow-sm)';
+              e.currentTarget.style.transform = 'scale(1) translateY(0px)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(241, 114, 88, 0.3)';
             }}
           >
-            커뮤니티 바로가기
+            🚀 집사 라운지 바로가기
           </Button>
         </Group>
       </Grid.Col>

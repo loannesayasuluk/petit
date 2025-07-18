@@ -5,6 +5,8 @@ import { AuthModal } from './AuthModal';
 import { PostWriteModal } from './PostWriteModal';
 import { NotificationDropdown } from './NotificationDropdown';
 import { useAuth } from '../contexts/AuthContext';
+import { Logo } from './Logo';
+import { SearchBar } from './SearchBar';
 
 interface HeaderProps {
   currentPage: 'home' | 'knowledge' | 'community' | 'mypage';
@@ -40,26 +42,23 @@ export function Header({ currentPage, setCurrentPage }: HeaderProps) {
         boxShadow: 'var(--mantine-shadow-xs)'
       }}
     >
-      <Title 
-        order={2} 
-        c="warm-coral.6" 
-        fw={800}
-        className="text-shimmer"
-        style={{ 
-          fontSize: '1.8rem',
-          cursor: 'pointer',
-          transition: 'all 0.3s ease'
-        }}
+      <Logo 
+        size="md"
         onClick={() => setCurrentPage('home')}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'scale(1.05)';
+      />
+
+      {/* 검색바 */}
+      <SearchBar 
+        onResultClick={(result) => {
+          // TODO: 검색 결과 클릭 시 해당 페이지로 이동
+          console.log('검색 결과 클릭:', result);
+          if (result.type === 'post') {
+            setCurrentPage('community');
+          } else {
+            setCurrentPage('knowledge');
+          }
         }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'scale(1)';
-        }}
-      >
-        Petit 🐾
-      </Title>
+      />
       
       <Group gap="lg">
         {/* 네비게이션 메뉴 */}
@@ -114,8 +113,10 @@ export function Header({ currentPage, setCurrentPage }: HeaderProps) {
               <Button 
                 leftSection={<IconPencil size="1rem"/>}
                 onClick={() => setWriteModalOpened(true)}
+                className="floating-button"
+                size="sm"
               >
-                글쓰기
+                ✍️ 글쓰기
               </Button>
               
               {/* 사용자 메뉴 */}

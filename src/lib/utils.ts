@@ -1,23 +1,23 @@
-// 🎨 카테고리별 색상 매핑 (새로운 색상 시스템 사용)
+// 🎨 카테고리별 색상 매핑 (의미론적 색상 시스템)
 export function getCategoryColor(category: string): string {
   switch (category) {
     case '건강':
     case '건강관리':
-      return 'red';
+      return 'health-red'; // 건강 = 빨간색 (주의, 중요함)
     case '응급':
     case '응급처치':
-      return 'orange';
+      return 'safety-orange'; // 응급 = 주황색 (경고, 긴급)
     case 'DIY':
     case '사육법':
-      return 'soft-sky';
+      return 'soft-sky'; // 사육법 = 하늘색 (차분, 전문적)
     case '꿀팁':
-      return 'fresh-green';
+      return 'fresh-green'; // 팁 = 초록색 (도움, 성장)
     case '영상':
-      return 'grape';
+      return 'comfort-purple'; // 영상 = 보라색 (엔터테인먼트)
     case '용품리뷰':
-      return 'sunny-yellow';
+      return 'sunny-yellow'; // 리뷰 = 노랑색 (정보, 밝음)
     case '일상':
-      return 'warm-coral';
+      return 'warm-coral'; // 일상 = 코랄색 (따뜻, 일상적)
     default:
       return 'warm-coral';
   }

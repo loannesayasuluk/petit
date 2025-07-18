@@ -90,21 +90,29 @@ function PostCard({ post, onLike, currentUserId, commentCount = 0 }: PostCardPro
       withBorder
       {...cardHoverProps}
     >
-      <Group justify="space-between" mb="xs">
-        <Badge color={getCategoryColor(post.category)} variant="light">
+      <Group justify="space-between" mb="md">
+        <Badge 
+          color={getCategoryColor(post.category)} 
+          variant="light"
+          className="card-category"
+        >
           {post.category}
         </Badge>
-        <Text size="xs" c="dimmed">
+        <Text className="card-meta-small">
           {formatTimeAgo(post.createdAt)}
         </Text>
       </Group>
 
-      <Title order={4} mb="sm" lineClamp={2}>
+      <Title order={4} className="card-title" lineClamp={2}>
         {post.title}
       </Title>
 
-      <Text size="sm" c="dimmed" mb="md" lineClamp={2}>
+      <Text className="card-content" lineClamp={3}>
         {post.content}
+      </Text>
+
+      <Text className="card-meta">
+        작성자: {post.author.avatar} {post.author.nickname}
       </Text>
 
       {/* 이미지 미리보기 */}
@@ -144,32 +152,27 @@ function PostCard({ post, onLike, currentUserId, commentCount = 0 }: PostCardPro
         </Box>
       )}
 
-      <Group justify="space-between">
-        <Group gap="xs">
-          <Text size="xs" fw={600}>
-            {post.author.avatar || '👤'} {post.author.nickname}
-          </Text>
-        </Group>
-
+      {/* 통계 섹션 */}
+      <Group justify="space-between" className="card-stats">
         <Group gap="lg">
-          <Group gap="xs">
+          <Group gap="xs" className="card-stats-item">
             <ActionIcon
               {...likeButtonProps(isLiked, likeLoading)}
               onClick={handleLikeClick}
+              size="sm"
             >
               {isLiked ? (
                 <IconHeartFilled 
-                  size={16} 
+                  size={14} 
                   style={{ 
                     animation: isLiked ? 'heartBeat 0.6s ease-in-out' : undefined 
                   }} 
                 />
               ) : (
-                <IconHeart size={16} />
+                <IconHeart size={14} />
               )}
             </ActionIcon>
             <Text 
-              size="xs" 
               fw={isLiked ? 600 : 400}
               c={isLiked ? 'red' : undefined}
               style={{
@@ -181,14 +184,15 @@ function PostCard({ post, onLike, currentUserId, commentCount = 0 }: PostCardPro
           </Group>
           <Group 
             gap="xs" 
+            className="card-stats-item"
             style={{ cursor: 'pointer' }}
             onClick={(e) => {
               e.stopPropagation();
               setShowComments(!showComments);
             }}
           >
-            <IconMessage size={16} color="#4c6ef5" />
-            <Text size="xs">{commentCount}</Text>
+            <IconMessage size={14} />
+            <Text>{commentCount}</Text>
           </Group>
           <Group gap="xs">
             <IconEye size={16} color="#868e96" />
@@ -332,6 +336,7 @@ export function CommunityPage() {
         variant={isSelected ? 'filled' : 'light'}
         size="sm"
         radius="xl"
+        className={`category-button ${isSelected ? 'selected' : ''}`}
         leftSection={<IconComponent size="1rem" />}
         rightSection={
           <Badge 
@@ -343,18 +348,6 @@ export function CommunityPage() {
           </Badge>
         }
         onClick={() => handleCategoryChange(category)}
-        style={{
-          transition: 'all 0.2s ease',
-          transform: isSelected ? 'scale(1.05)' : 'scale(1)',
-        }}
-        onMouseEnter={(e) => {
-          if (!isSelected) {
-            e.currentTarget.style.transform = 'scale(1.05)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = isSelected ? 'scale(1.05)' : 'scale(1)';
-        }}
       >
         {category}
       </Button>
@@ -366,11 +359,11 @@ export function CommunityPage() {
       {/* 헤더 섹션 */}
       <Box ta="center" mb="xl">
         <Title order={1} size="3rem" fw={800} mb="md">
-          커뮤니티 💬
+          집사 소통 라운지 💬
         </Title>
         <Text size="lg" c="dimmed" maw={600} mx="auto">
-          우리 애기들의 일상과 고민을 함께 나누는<br />
-          따뜻한 소통 공간입니다
+          초보부터 베테랑까지! 실전 경험담과<br />
+          케어 팁을 나누는 집사들의 소통 공간
         </Text>
       </Box>
 
@@ -385,8 +378,9 @@ export function CommunityPage() {
           <Button 
             leftSection={<IconPencil size="1rem" />}
             onClick={() => setWriteModalOpened(true)}
+            className="floating-button"
           >
-            새 글쓰기
+            ✍️ 새 글쓰기
           </Button>
         )}
       </Group>

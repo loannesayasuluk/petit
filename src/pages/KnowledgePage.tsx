@@ -93,23 +93,32 @@ function ArticleCard({ article, onLike, currentUserId }: ArticleCardProps) {
       )}
 
       {/* 카테고리와 날짜 */}
-      <Group justify="space-between" mb="xs">
-        <Badge color={getCategoryColor(article.category)} variant="light">
+      <Group justify="space-between" mb="md">
+        <Badge 
+          color={getCategoryColor(article.category)} 
+          variant="light"
+          className="card-category"
+        >
           {article.category}
         </Badge>
-        <Text size="xs" c="dimmed">
+        <Text className="card-meta-small">
           {formatTimeAgo(article.createdAt)}
         </Text>
       </Group>
 
       {/* 제목 */}
-      <Title order={4} mb="sm" lineClamp={2} style={{ flex: 1 }}>
+      <Title order={4} className="card-title" lineClamp={2} style={{ flex: 1 }}>
         {article.title}
       </Title>
 
       {/* 내용 미리보기 */}
-      <Text size="sm" c="dimmed" mb="md" lineClamp={3}>
+      <Text className="card-content" lineClamp={3}>
         {article.content.replace(/#{1,6}\s/g, '').slice(0, 120)}...
+      </Text>
+
+      {/* 작성자 정보 */}
+      <Text className="card-meta">
+        작성자: {article.author.avatar} {article.author.nickname}
       </Text>
 
       {/* 태그들 */}
@@ -128,44 +137,38 @@ function ArticleCard({ article, onLike, currentUserId }: ArticleCardProps) {
         </Group>
       )}
 
-      {/* 하단 정보 */}
-      <Group justify="space-between" mt="auto">
-        <Group gap="xs">
-          <Text size="xs" fw={600}>
-            {article.author.avatar || '👤'} {article.author.nickname}
-          </Text>
-        </Group>
-
+      {/* 통계 섹션 */}
+      <Group justify="space-between" className="card-stats" mt="auto">
         <Group gap="lg">
-          <Group gap="xs">
-            <IconEye size={16} color="#868e96" />
-            <Text size="xs">{article.viewCount}</Text>
+          <Group gap="xs" className="card-stats-item">
+            <IconEye size={14} />
+            <Text>조회 {article.viewCount}</Text>
           </Group>
-          <Group gap="xs">
+          <Group gap="xs" className="card-stats-item">
             <ActionIcon
               {...likeButtonProps(isLiked, likeLoading)}
               onClick={handleLikeClick}
+              size="sm"
             >
               {isLiked ? (
                 <IconHeartFilled 
-                  size={16} 
+                  size={14} 
                   style={{ 
                     animation: isLiked ? 'heartBeat 0.6s ease-in-out' : undefined 
                   }} 
                 />
               ) : (
-                <IconHeart size={16} />
+                <IconHeart size={14} />
               )}
             </ActionIcon>
             <Text 
-              size="xs" 
               fw={isLiked ? 600 : 400}
               c={isLiked ? 'red' : undefined}
               style={{
                 transition: 'all 0.2s ease',
               }}
             >
-              {article.likes.length}
+              좋아요 {article.likes.length}
             </Text>
           </Group>
         </Group>
@@ -287,6 +290,7 @@ export function KnowledgePage() {
         variant={isSelected ? 'filled' : 'light'}
         size="sm"
         radius="xl"
+        className={`category-button ${isSelected ? 'selected' : ''}`}
         leftSection={<IconComponent size="1rem" />}
         rightSection={
           <Badge 
@@ -298,18 +302,6 @@ export function KnowledgePage() {
           </Badge>
         }
         onClick={() => handleCategoryChange(category)}
-        style={{
-          transition: 'all 0.2s ease',
-          transform: isSelected ? 'scale(1.05)' : 'scale(1)',
-        }}
-        onMouseEnter={(e) => {
-          if (!isSelected) {
-            e.currentTarget.style.transform = 'scale(1.05)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = isSelected ? 'scale(1.05)' : 'scale(1)';
-        }}
       >
         {category}
       </Button>
@@ -325,11 +317,11 @@ export function KnowledgePage() {
       {/* 헤더 섹션 */}
       <Box ta="center" mb="xl">
         <Title order={1} size="3rem" fw={800} mb="md">
-          지식백과 📚
+          전문가 케어 가이드 📚
         </Title>
         <Text size="lg" c="dimmed" maw={600} mx="auto">
-          우리 애기들을 더 건강하고 행복하게 키우기 위한<br />
-          전문가들이 정리한 알찬 정보들을 만나보세요
+          초보 집사도 쉽게 따라할 수 있는<br />
+          수의사와 전문가가 검증한 케어 정보들
         </Text>
       </Box>
 

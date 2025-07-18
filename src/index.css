@@ -138,9 +138,145 @@ h1, h2, h3, h4, h5, h6 {
 .text-accent { color: var(--petit-accent) !important; }
 .text-success { color: var(--petit-success) !important; }
 
+/* 🌟 매력적인 카테고리 버튼 */
+.category-button {
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent !important;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, var(--petit-primary), var(--petit-accent)) border-box !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.category-button.selected {
+  background: linear-gradient(135deg, var(--petit-primary), var(--petit-accent)) !important;
+  color: white !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(241, 114, 88, 0.3);
+}
+
+.category-button:not(.selected):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(241, 114, 88, 0.2);
+  background: linear-gradient(135deg, #fff9f3, #fef3e2) padding-box,
+              linear-gradient(135deg, var(--petit-primary), var(--petit-accent)) border-box !important;
+}
+
+/* ✨ 글리터 효과 */
+@keyframes glitter {
+  0%, 100% { opacity: 0; transform: scale(0.8) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
+.category-button::before {
+  content: '✨';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 0.7rem;
+  animation: glitter 2s ease-in-out infinite;
+  opacity: 0;
+}
+
+.category-button.selected::before {
+  opacity: 1;
+}
+
+/* 🎭 플로팅 액션 버튼 효과 */
+.floating-button {
+  background: linear-gradient(135deg, var(--petit-primary), var(--petit-accent)) !important;
+  border: none !important;
+  box-shadow: 0 4px 20px rgba(241, 114, 88, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.floating-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.6s;
+}
+
+.floating-button:hover::before {
+  left: 100%;
+}
+
+.floating-button:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(241, 114, 88, 0.4) !important;
+}
+
 /* 🎯 부드러운 스크롤 */
 html {
   scroll-behavior: smooth;
+}
+
+/* 🎪 카드 정보 위계 클래스 */
+.card-title {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  line-height: 1.4 !important;
+  color: var(--mantine-color-dark-8) !important;
+  margin-bottom: 0.75rem !important;
+  transition: color 0.2s ease !important;
+}
+
+.card-title:hover {
+  color: var(--petit-primary) !important;
+}
+
+.card-category {
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  padding: 6px 12px !important;
+  border-radius: 20px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.025em !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-meta {
+  font-size: 0.875rem !important;
+  color: var(--mantine-color-gray-6) !important;
+  margin: 0.5rem 0 !important;
+}
+
+.card-meta-small {
+  font-size: 0.75rem !important;
+  color: var(--mantine-color-gray-5) !important;
+  font-weight: 500 !important;
+}
+
+.card-content {
+  font-size: 0.9375rem !important;
+  line-height: 1.6 !important;
+  color: var(--mantine-color-gray-7) !important;
+  margin: 1rem 0 !important;
+}
+
+.card-stats {
+  border-top: 1px solid var(--mantine-color-gray-2);
+  padding-top: 0.75rem;
+  margin-top: auto;
+}
+
+.card-stats-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem !important;
+  color: var(--mantine-color-gray-6) !important;
+  transition: color 0.2s ease;
+}
+
+.card-stats-item:hover {
+  color: var(--petit-primary) !important;
 }
 
 /* 📱 스크롤바 커스터마이징 */
