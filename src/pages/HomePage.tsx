@@ -1,5 +1,5 @@
 import { Title, Text, Button, Group, Box, Grid, Image, Card, SimpleGrid, Divider, Loader, Center, Stack } from '@mantine/core';
-import { IconHeart, IconMessage, IconEye, IconPencil } from '@tabler/icons-react';
+import { IconHeart, IconMessage, IconEye } from '@tabler/icons-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { useState, useEffect } from 'react';
 import { getPosts } from '../services/postService';
