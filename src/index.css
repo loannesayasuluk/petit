@@ -1,6 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Square+Round:wght@400;700;800&display=swap');
 
-/* 웹폰트 직접 로드 및 강제 적용 */
+/* 🎨 CSS 변수 - Petit 테마 색상 */
+:root {
+  --petit-primary: #f17258;
+  --petit-primary-light: #f6a28d;
+  --petit-primary-dark: #d55640;
+  
+  --petit-secondary: #0ea5e9;
+  --petit-secondary-light: #38bdf8;
+  --petit-secondary-dark: #0284c7;
+  
+  --petit-accent: #eab308;
+  --petit-accent-light: #facc15;
+  --petit-accent-dark: #ca8a04;
+  
+  --petit-success: #22c55e;
+  --petit-warning: #f59e0b;
+  --petit-error: #ef4444;
+  
+  --petit-bg-gradient: linear-gradient(135deg, #fff9f3 0%, #fef3e2 100%);
+  --petit-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --petit-card-shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* 🔤 웹폰트 설정 */
 @font-face {
   font-family: 'NanumSquareRound';
   src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff') format('woff');
@@ -8,13 +31,15 @@
   font-style: normal;
 }
 
-/* 모든 요소에 강제 적용 */
+/* 🎯 전역 폰트 적용 */
 * {
   font-family: 'NanumSquareRound', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
 body {
   font-family: 'NanumSquareRound', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  background: var(--petit-bg-gradient);
+  min-height: 100vh;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -22,7 +47,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800 !important;
 }
 
-/* Mantine 컴포넌트 강제 적용 */
+/* 🎪 Mantine 컴포넌트 스타일 강화 */
 .mantine-Title-root,
 .mantine-Text-root,
 .mantine-Button-root,
@@ -30,18 +55,25 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'NanumSquareRound', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
-/* 좋아요 애니메이션 */
+/* 💖 좋아요 애니메이션 개선 */
 @keyframes heartBeat {
   0% { transform: scale(1); }
-  14% { transform: scale(1.3); }
+  14% { transform: scale(1.4); }
   28% { transform: scale(1); }
-  42% { transform: scale(1.2); }
+  42% { transform: scale(1.3); }
   70% { transform: scale(1); }
 }
 
-/* 좋아요 버튼 호버 효과 */
+@keyframes heartPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1.1); }
+}
+
+/* 🎯 좋아요 버튼 효과 */
 .like-button {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
 }
 
 .like-button:hover {
@@ -50,4 +82,82 @@ h1, h2, h3, h4, h5, h6 {
 
 .like-button.liked {
   animation: heartBeat 0.6s ease-in-out;
+  color: var(--petit-error);
+}
+
+.like-button.just-liked {
+  animation: heartPop 0.3s ease-in-out;
+}
+
+/* 🎪 카드 호버 효과 개선 */
+.petit-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(0px);
+  box-shadow: var(--petit-card-shadow);
+}
+
+.petit-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--petit-card-shadow-hover);
+}
+
+/* 🌈 그라데이션 배경 유틸리티 */
+.bg-gradient-petit {
+  background: var(--petit-bg-gradient);
+}
+
+.bg-gradient-header {
+  background: linear-gradient(135deg, #fff9f3 0%, #fef8f0 100%);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(241, 114, 88, 0.1);
+}
+
+/* ✨ 반짝이는 텍스트 효과 */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--petit-primary) 0%,
+    var(--petit-accent) 50%,
+    var(--petit-primary) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* 🎨 색상 유틸리티 클래스 */
+.text-primary { color: var(--petit-primary) !important; }
+.text-secondary { color: var(--petit-secondary) !important; }
+.text-accent { color: var(--petit-accent) !important; }
+.text-success { color: var(--petit-success) !important; }
+
+/* 🎯 부드러운 스크롤 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 📱 스크롤바 커스터마이징 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--petit-primary-light);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--petit-primary);
 } 

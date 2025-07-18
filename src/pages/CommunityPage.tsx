@@ -40,27 +40,9 @@ import { PostWriteModal } from '../components/PostWriteModal';
 import { CommentSection } from '../components/CommentSection';
 import type { CommunityPost } from '../types';
 import { POST_CATEGORIES } from '../types';
+import { formatTimeAgo, getCategoryColor, cardHoverProps, likeButtonProps } from '../lib/utils';
 
-function formatTimeAgo(date: Date): string {
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-  
-  if (diffInSeconds < 60) return '방금 전';
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}분 전`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}시간 전`;
-  return `${Math.floor(diffInSeconds / 86400)}일 전`;
-}
 
-function getCategoryColor(category: string) {
-  switch (category) {
-    case '건강': return 'red';
-    case '응급': return 'orange';
-    case 'DIY': return 'blue';
-    case '꿀팁': return 'green';
-    case '영상': return 'purple';
-    default: return 'warm-coral';
-  }
-}
 
 function getCategoryIcon(category: string) {
   switch (category) {
@@ -106,19 +88,7 @@ function PostCard({ post, onLike, currentUserId, commentCount = 0 }: PostCardPro
       padding="lg"
       radius="lg"
       withBorder
-      style={{
-        transition: 'all 0.3s ease',
-        cursor: 'pointer',
-        transform: 'translateY(0px)'
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-3px)';
-        e.currentTarget.style.boxShadow = 'var(--mantine-shadow-lg)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0px)';
-        e.currentTarget.style.boxShadow = 'var(--mantine-shadow-sm)';
-      }}
+      {...cardHoverProps}
     >
       <Group justify="space-between" mb="xs">
         <Badge color={getCategoryColor(post.category)} variant="light">
@@ -184,22 +154,8 @@ function PostCard({ post, onLike, currentUserId, commentCount = 0 }: PostCardPro
         <Group gap="lg">
           <Group gap="xs">
             <ActionIcon
-              variant="subtle"
-              color={isLiked ? 'red' : 'gray'}
+              {...likeButtonProps(isLiked, likeLoading)}
               onClick={handleLikeClick}
-              loading={likeLoading}
-              style={{
-                transform: isLiked ? 'scale(1.1)' : 'scale(1)',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                if (!likeLoading) {
-                  e.currentTarget.style.transform = 'scale(1.2)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = isLiked ? 'scale(1.1)' : 'scale(1)';
-              }}
             >
               {isLiked ? (
                 <IconHeartFilled 

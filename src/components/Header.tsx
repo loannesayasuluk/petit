@@ -29,6 +29,7 @@ export function Header({ currentPage, setCurrentPage }: HeaderProps) {
       component="header" 
       h={80} 
       px="lg" 
+      className="bg-gradient-header"
       style={{ 
         position: 'sticky',
         top: 0,
@@ -36,13 +37,29 @@ export function Header({ currentPage, setCurrentPage }: HeaderProps) {
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'space-between', 
-        backgroundColor: '#FFF9E9', 
-        borderBottom: '1px solid #F1E9D2', 
-        boxShadow: 'var(--mantine-shadow-xs)',
-        backdropFilter: 'blur(10px)'
+        boxShadow: 'var(--mantine-shadow-xs)'
       }}
     >
-      <Title order={2} c="warm-coral.6" fw={800}>Petit</Title>
+      <Title 
+        order={2} 
+        c="warm-coral.6" 
+        fw={800}
+        className="text-shimmer"
+        style={{ 
+          fontSize: '1.8rem',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease'
+        }}
+        onClick={() => setCurrentPage('home')}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.05)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+        }}
+      >
+        Petit 🐾
+      </Title>
       
       <Group gap="lg">
         {/* 네비게이션 메뉴 */}
