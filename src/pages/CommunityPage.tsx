@@ -212,9 +212,55 @@ export function CommunityPage() {
       setError('');
 
       let allPosts: CommunityPost[] = [];
+      let useFirebaseData = false;
 
-      // 개발 환경에서는 샘플 데이터만 즉시 사용 (Firebase 호출 스킵)
-      if (shouldShowSampleData()) {
+      // Firebase에서 실제 데이터 로딩 우선 시도
+      try {
+        const result = await getPosts(
+          10, 
+          isInitial ? undefined : lastDoc, 
+          category === '전체' ? undefined : category
+        );
+        allPosts = result.posts;
+        
+        if (allPosts.length > 0) {
+          // Firebase에서 데이터를 성공적으로 가져온 경우
+          useFirebaseData = true;
+          setLastDoc(result.lastDoc);
+          setHasMore(result.posts.length === 10);
+
+          if (isInitial) {
+            setPosts(allPosts);
+          } else {
+            setPosts(prev => [...prev, ...allPosts]);
+          }
+
+          // 댓글 수 로딩
+          const commentCountPromises = allPosts.map(async (post) => {
+            const count = await getCommentCount(post.id);
+            return { postId: post.id, count };
+          });
+
+          const commentCountResults = await Promise.all(commentCountPromises);
+          const newCommentCounts: Record<string, number> = {};
+          commentCountResults.forEach(({ postId, count }) => {
+            newCommentCounts[postId] = count;
+          });
+
+          if (isInitial) {
+            setCommentCounts(newCommentCounts);
+          } else {
+            setCommentCounts(prev => ({ ...prev, ...newCommentCounts }));
+          }
+        }
+      } catch (firestoreError) {
+        console.log('Firestore 연결 실패, 로컬 데이터 사용:', firestoreError);
+      }
+
+      // Firebase 데이터가 없거나 실패한 경우 로컬 데이터 fallback
+      if (!useFirebaseData) {
+        console.log('🔄 Firebase 데이터가 없어서 로컬 데이터를 표시합니다. window.uploadSampleData()를 실행하세요.');
+        
         const filteredSamplePosts = category === '전체' 
           ? samplePosts 
           : samplePosts.filter(post => post.category === category);
@@ -243,56 +289,17 @@ export function CommunityPage() {
           setCommentCounts(prev => ({ ...prev, ...newCommentCounts }));
         }
 
-        setHasMore(false); // 샘플 데이터는 더보기 없음
-        setLoading(false);
-        return;
-      }
-
-      // 프로덕션 환경에서만 Firestore 데이터 로딩
-      try {
-        const result = await getPosts(
-          10, 
-          isInitial ? undefined : lastDoc, 
-          category === '전체' ? undefined : category
-        );
-        allPosts = result.posts;
-        setLastDoc(result.lastDoc);
-        setHasMore(result.posts.length === 10);
-
-        if (isInitial) {
-          setPosts(allPosts);
-        } else {
-          setPosts(prev => [...prev, ...allPosts]);
-        }
-
-        // 댓글 수 로딩
-        if (allPosts.length > 0) {
-          const commentCountPromises = allPosts.map(async (post) => {
-            const count = await getCommentCount(post.id);
-            return { postId: post.id, count };
-          });
-
-          const commentCountResults = await Promise.all(commentCountPromises);
-          const newCommentCounts: Record<string, number> = {};
-          commentCountResults.forEach(({ postId, count }) => {
-            newCommentCounts[postId] = count;
-          });
-
-          if (isInitial) {
-            setCommentCounts(newCommentCounts);
-          } else {
-            setCommentCounts(prev => ({ ...prev, ...newCommentCounts }));
-          }
-        }
-      } catch (firestoreError) {
-        console.log('Firestore 연결 실패:', firestoreError);
-        setError('게시물을 불러오는 중 오류가 발생했습니다.');
-        setHasMore(false);
+        setHasMore(false); // 로컬 데이터는 더보기 없음
       }
       
     } catch (err) {
       console.error('게시물 로딩 오류:', err);
       setError('게시물을 불러오는 중 오류가 발생했습니다.');
+      // 에러 발생 시에도 로컬 데이터 표시
+      const filteredSamplePosts = category === '전체' 
+        ? samplePosts 
+        : samplePosts.filter(post => post.category === category);
+      setPosts(filteredSamplePosts);
     } finally {
       setLoading(false);
     }
@@ -314,9 +321,9 @@ export function CommunityPage() {
     }
 
     try {
-      // 샘플 데이터인지 확인
-      if (postId.startsWith('sample-') || shouldShowSampleData()) {
-        // 샘플 데이터는 로컬 상태만 업데이트 (Firebase 호출 스킵)
+      // 로컬 데이터인지 확인 (샘플 데이터 fallback인 경우)
+      if (postId.startsWith('sample-')) {
+        // 로컬 데이터는 상태만 업데이트 (Firebase 호출 없음)
         setPosts(prev => prev.map(post => {
           if (post.id === postId) {
             const isLiked = post.likes.includes(currentUser.uid);
@@ -330,10 +337,10 @@ export function CommunityPage() {
           return post;
         }));
       } else {
-        // 실제 Firebase 데이터
+        // Firebase 데이터 - 실제 서버 업데이트
         await toggleLike(postId, currentUser.uid);
         
-        // 로컬 상태 업데이트
+        // 로컬 상태도 즉시 업데이트 (UX 향상)
         setPosts(prev => prev.map(post => {
           if (post.id === postId) {
             const isLiked = post.likes.includes(currentUser.uid);

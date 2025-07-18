@@ -78,26 +78,29 @@ function RecentPosts() {
       try {
         let allPosts: CommunityPost[] = [];
 
-        // 개발 환경에서는 샘플 데이터만 즉시 사용 (Firebase 호출 스킵)
-        if (shouldShowSampleData()) {
-          allPosts = [...samplePosts.slice(0, 4)];
-          setPosts(allPosts);
-          setLoading(false);
-          return;
-        }
-
-        // 프로덕션 환경에서만 Firestore 데이터 로딩
+        // Firebase에서 실제 데이터 로딩 우선 시도
         try {
           const result = await getPosts(4); // 최신 4개만 가져오기
           allPosts = result.posts;
+          
+          // Firebase에서 데이터를 성공적으로 가져온 경우
+          if (allPosts.length > 0) {
+            setPosts(allPosts);
+            setLoading(false);
+            return;
+          }
         } catch (firestoreError) {
-          console.log('Firestore 연결 실패:', firestoreError);
-          allPosts = [];
+          console.log('Firestore 연결 실패, 로컬 데이터 사용:', firestoreError);
         }
 
+        // Firebase 데이터가 없거나 실패한 경우 로컬 데이터 fallback
+        console.log('🔄 Firebase 데이터가 없어서 로컬 데이터를 표시합니다. window.uploadSampleData()를 실행하세요.');
+        allPosts = [...samplePosts.slice(0, 4)];
         setPosts(allPosts);
       } catch (error) {
         console.error('최신 게시물 로딩 오류:', error);
+        // 에러 발생 시에도 로컬 데이터 표시
+        setPosts([...samplePosts.slice(0, 4)]);
       } finally {
         setLoading(false);
       }

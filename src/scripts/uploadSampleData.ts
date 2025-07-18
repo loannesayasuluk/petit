@@ -168,9 +168,7 @@ export async function uploadAllSampleData() {
   }
 }
 
-// 개발 환경에서만 전역에 함수 노출
-if (import.meta.env.DEV) {
-  // @ts-ignore
-  window.uploadSampleData = uploadAllSampleData;
-  console.log('🔧 개발 모드: window.uploadSampleData() 함수가 사용 가능합니다.');
-} 
+// 프로덕션에서도 초기 데이터 업로드를 위해 전역에 함수 노출
+// @ts-ignore
+window.uploadSampleData = uploadAllSampleData;
+console.log('🔧 window.uploadSampleData() 함수가 사용 가능합니다.'); 

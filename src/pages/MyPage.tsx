@@ -228,25 +228,36 @@ export function MyPage() {
       }
 
       try {
-        // 개발 환경에서는 샘플 데이터만 사용 (Firebase 호출 스킵)
-        if (import.meta.env.DEV) {
-          // 샘플 데이터에서 현재 사용자 게시물만 표시 (임시로 빈 배열)
-          setUserPosts([]);
-          setLoading(false);
-          return;
+        let userPostsData: typeof myPosts = [];
+        let useFirebaseData = false;
+
+        // Firebase에서 사용자 게시물 로딩 우선 시도
+        try {
+          // TODO: 사용자별 게시물 조회 함수 구현 필요
+          // const result = await getPostsByUser(currentUser.uid);
+          
+          // 임시로 모든 게시물에서 현재 사용자 게시물 필터링
+          const result = await getPosts(50);
+          const filteredPosts = result.posts.filter(post => post.author.uid === currentUser.uid);
+          
+          if (filteredPosts.length > 0) {
+            useFirebaseData = true;
+            userPostsData = convertToStaticFormat(filteredPosts);
+          }
+        } catch (error) {
+          console.log('Firebase에서 사용자 게시물 로딩 실패:', error);
         }
 
-        // 프로덕션 환경에서만 Firebase 호출
-        // TODO: 사용자별 게시물 조회 함수 구현 필요
-        // const result = await getPostsByUser(currentUser.uid);
-        // setMyPosts(result.posts);
-        
-        // 임시로 모든 게시물에서 현재 사용자 게시물 필터링
-        const result = await getPosts(50);
-        const filteredPosts = result.posts.filter(post => post.author.uid === currentUser.uid);
-        setUserPosts(convertToStaticFormat(filteredPosts));
+        // Firebase 데이터가 없는 경우 (실제 사용자이므로 빈 배열)
+        if (!useFirebaseData) {
+          console.log('🔄 사용자 게시물이 없습니다.');
+          userPostsData = [];
+        }
+
+        setUserPosts(userPostsData);
       } catch (error) {
         console.error('내 게시물 로딩 오류:', error);
+        setUserPosts([]);
       } finally {
         setLoading(false);
       }

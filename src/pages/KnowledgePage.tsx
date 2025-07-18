@@ -189,20 +189,9 @@ export function KnowledgePage() {
       setError('');
 
       let allArticles: KnowledgeArticle[] = [];
+      let useFirebaseData = false;
 
-      // 개발 환경에서는 샘플 데이터만 즉시 사용 (Firebase 호출 스킵)
-      if (shouldShowSampleData()) {
-        const filteredSampleArticles = category === '전체' 
-          ? sampleKnowledgeArticles 
-          : sampleKnowledgeArticles.filter(article => article.category === category);
-        
-        allArticles = filteredSampleArticles;
-        setArticles(allArticles);
-        setLoading(false);
-        return;
-      }
-
-      // 프로덕션 환경에서만 Firestore 데이터 로딩
+      // Firebase에서 실제 데이터 로딩 우선 시도
       try {
         const result = await getKnowledgeArticles(
           20, 
@@ -210,15 +199,35 @@ export function KnowledgePage() {
           category === '전체' ? undefined : category
         );
         allArticles = result.articles;
+        
+        if (allArticles.length > 0) {
+          // Firebase에서 데이터를 성공적으로 가져온 경우
+          useFirebaseData = true;
+          setArticles(allArticles);
+        }
       } catch (firestoreError) {
-        console.log('Firestore 연결 실패:', firestoreError);
-        setError('지식백과를 불러오는 중 오류가 발생했습니다.');
+        console.log('Firestore 연결 실패, 로컬 데이터 사용:', firestoreError);
       }
 
-      setArticles(allArticles);
+      // Firebase 데이터가 없거나 실패한 경우 로컬 데이터 fallback
+      if (!useFirebaseData) {
+        console.log('🔄 Firebase 데이터가 없어서 로컬 데이터를 표시합니다. window.uploadSampleData()를 실행하세요.');
+        
+        const filteredSampleArticles = category === '전체' 
+          ? sampleKnowledgeArticles 
+          : sampleKnowledgeArticles.filter(article => article.category === category);
+        
+        allArticles = filteredSampleArticles;
+        setArticles(allArticles);
+      }
     } catch (err) {
       console.error('지식백과 로딩 오류:', err);
       setError('지식백과를 불러오는 중 오류가 발생했습니다.');
+      // 에러 발생 시에도 로컬 데이터 표시
+      const filteredSampleArticles = category === '전체' 
+        ? sampleKnowledgeArticles 
+        : sampleKnowledgeArticles.filter(article => article.category === category);
+      setArticles(filteredSampleArticles);
     } finally {
       setLoading(false);
     }
@@ -236,9 +245,9 @@ export function KnowledgePage() {
     }
 
     try {
-      // 샘플 데이터인지 확인
+      // 로컬 데이터인지 확인 (샘플 데이터 fallback인 경우)
       if (articleId.startsWith('sample-')) {
-        // 샘플 데이터는 로컬 상태만 업데이트
+        // 로컬 데이터는 상태만 업데이트 (Firebase 호출 없음)
         setArticles(prev => prev.map(article => {
           if (article.id === articleId) {
             const isLiked = article.likes.includes(currentUser.uid);
@@ -252,7 +261,7 @@ export function KnowledgePage() {
           return article;
         }));
       } else {
-        // 실제 Firebase 데이터
+        // Firebase 데이터 - 실제 서버 업데이트
         await toggleKnowledgeLike(articleId, currentUser.uid);
         
         // 로컬 상태도 즉시 업데이트 (UX 향상)
