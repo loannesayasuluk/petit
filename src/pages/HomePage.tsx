@@ -28,7 +28,7 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
         </Title>
         <Text c="dimmed" mt="lg" mb="xl" fz="sm">
           실전 경험담과 따뜻한 조언으로 함께 성장해요<br/>
-          지금 <strong>247명의 집사들</strong>이 경험을 나누고 있어요!
+          지금 <strong>250명의 집사들</strong>이 경험을 나누고 있어요!
         </Text>
         
         {/* 따뜻한 커뮤니티 분위기 */}
