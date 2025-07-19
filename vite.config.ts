@@ -17,8 +17,8 @@ export default defineConfig({
         }
       }
     },
-    // 압축 최적화 (간단한 설정으로 변경)
-    minify: 'terser'
+    // 압축 최적화 (esbuild 사용 - 더 빠름)
+    minify: 'esbuild'
   },
   
   // 개발 서버 최적화
