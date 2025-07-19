@@ -3,12 +3,76 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="/favicon.ico" />
     
+    <!-- SEO 메타 태그 -->
+    <title>Petit | 초보 집사를 위한 따뜻한 커뮤니티 🐾</title>
+    <meta name="description" content="처음 키우는데 막막하세요? 247명의 선배 집사들이 실전 경험담과 따뜻한 조언으로 도와드려요! 햄스터, 앵무새, 고슴도치 등 소동물 케어 꿀팁 공유" />
+    <meta name="keywords" content="애완동물, 반려동물, 햄스터, 앵무새, 고슴도치, 소동물, 초보집사, 경험담, 커뮤니티, 애완동물케어, 펫케어" />
+    <meta name="author" content="Petit Community" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph (소셜 공유) -->
+    <meta property="og:title" content="Petit | 초보 집사를 위한 따뜻한 커뮤니티" />
+    <meta property="og:description" content="처음 키우는데 막막하세요? 선배 집사들의 실전 경험담과 따뜻한 조언으로 함께 성장해요!" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://petit-web.vercel.app" />
+    <meta property="og:image" content="https://petit-web.vercel.app/favicon.svg" />
+    <meta property="og:site_name" content="Petit" />
+    <meta property="og:locale" content="ko_KR" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Petit | 초보 집사를 위한 따뜻한 커뮤니티" />
+    <meta name="twitter:description" content="처음 키우는데 막막하세요? 선배 집사들의 실전 경험담과 따뜻한 조언으로 함께 성장해요!" />
+    <meta name="twitter:image" content="https://petit-web.vercel.app/favicon.svg" />
+    
+    <!-- 파비콘 -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    
+    <!-- 폰트 최적화 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Square+Round:wght@400;700;800&display=swap" rel="stylesheet">
-    <title>Petit | 초보 집사를 위한 따뜻한 커뮤니티 🐾</title>
+    
+    <!-- 구조화된 데이터 (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Petit",
+      "description": "초보 집사를 위한 따뜻한 커뮤니티",
+      "url": "https://petit-web.vercel.app",
+      "logo": "https://petit-web.vercel.app/favicon.svg",
+      "sameAs": [],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://petit-web.vercel.app/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Petit Community",
+      "description": "247명의 선배 집사들이 실전 경험담과 따뜻한 조언을 나누는 애완동물 커뮤니티",
+      "url": "https://petit-web.vercel.app",
+      "logo": "https://petit-web.vercel.app/favicon.svg",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": "Korean"
+      },
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "초보 애완동물 집사"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

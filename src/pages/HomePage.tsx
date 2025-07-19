@@ -86,6 +86,7 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
           src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?q=80&w=600&auto=format&fit=crop" 
           alt="귀여운 애완동물들이 함께 있는 모습"
           h={300}
+          loading="lazy"
           style={{ 
             transition: 'all 0.3s ease',
             cursor: 'pointer',
