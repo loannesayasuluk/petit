@@ -19,6 +19,7 @@ export interface CommunityPost {
     avatar?: string;
   };
   category: '일상' | '건강' | 'DIY' | '꿀팁' | '응급' | '영상' | '기타';
+  tags: string[]; // 게시물 태그 배열
   imageUrls?: string[]; // 첨부 이미지들
   likes: string[]; // 좋아요한 사용자들의 UID 배열
   viewCount: number;
@@ -79,13 +80,22 @@ export interface Notification {
   createdAt: Date;
 }
 
+// 태그 타입
+export interface Tag {
+  id: string; // 태그 이름
+  count: number; // 사용 횟수
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // Firestore 컬렉션 이름 상수
 export const COLLECTIONS = {
   USERS: 'users',
   POSTS: 'posts',
   COMMENTS: 'comments',
   ARTICLES: 'articles',
-  NOTIFICATIONS: 'notifications'
+  NOTIFICATIONS: 'notifications',
+  TAGS: 'tags'
 } as const;
 
 // 카테고리 상수

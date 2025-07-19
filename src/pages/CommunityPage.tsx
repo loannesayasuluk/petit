@@ -220,6 +220,7 @@ export function CommunityPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [writeModalOpened, setWriteModalOpened] = useState(false);
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
@@ -280,13 +281,14 @@ export function CommunityPage() {
         setError('');
       },
       selectedCategory === '전체' ? undefined : selectedCategory,
-      20 // 더 많은 게시물 로딩
+      20, // 더 많은 게시물 로딩
+      selectedTag || undefined // 태그 필터 추가
     );
 
     return () => {
       unsubscribePosts();
     };
-  }, [selectedCategory]);
+  }, [selectedCategory, selectedTag]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
@@ -460,7 +462,25 @@ export function CommunityPage() {
 
         {/* 사이드바 - 1/3 */}
         <Grid.Col span={{ base: 12, md: 4 }}>
-          <TrendingSidebar />
+          <TrendingSidebar onTagClick={(tagName) => {
+            setSelectedTag(tagName);
+            setSelectedCategory('전체'); // 태그 선택 시 카테고리 초기화
+          }} />
+          
+          {/* 현재 필터 표시 */}
+          {selectedTag && (
+            <Group mt="md" gap="xs">
+              <Text size="sm" c="dimmed">필터:</Text>
+              <Badge 
+                variant="filled" 
+                color="warm-coral"
+                style={{ cursor: 'pointer' }}
+                onClick={() => setSelectedTag(null)}
+              >
+                #{selectedTag} ✕
+              </Badge>
+            </Group>
+          )}
         </Grid.Col>
       </Grid>
 

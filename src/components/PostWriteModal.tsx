@@ -12,7 +12,8 @@ import {
   Image, 
   Box, 
   Text,
-  ActionIcon
+  ActionIcon,
+  TagsInput
 } from '@mantine/core';
 import { IconPhoto, IconAlertCircle, IconX } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -32,6 +33,7 @@ export function PostWriteModal({ opened, onClose, onSuccess }: PostWriteModalPro
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState<string>('일상');
+  const [tags, setTags] = useState<string[]>([]);
   const [images, setImages] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -40,6 +42,7 @@ export function PostWriteModal({ opened, onClose, onSuccess }: PostWriteModalPro
     setTitle('');
     setContent('');
     setCategory('일상');
+    setTags([]);
     setImages([]);
     setError('');
   };
@@ -88,6 +91,7 @@ export function PostWriteModal({ opened, onClose, onSuccess }: PostWriteModalPro
         title: title.trim(),
         content: content.trim(),
         category: category as any,
+        tags: tags.map(tag => tag.trim()).filter(tag => tag.length > 0),
         author: {
           uid: currentUser.uid,
           nickname: userProfile.nickname,
@@ -140,6 +144,22 @@ export function PostWriteModal({ opened, onClose, onSuccess }: PostWriteModalPro
           value={category}
           onChange={(value) => value && setCategory(value)}
           required
+        />
+
+        {/* 태그 입력 */}
+        <TagsInput
+          label="태그"
+          placeholder="#사료추천, #건강상식 등을 입력하세요"
+          value={tags}
+          onChange={setTags}
+          data={[
+            '사료추천', '건강상식', '산책꿀팁', '응급처치', '훈련법', 
+            '용품리뷰', '미용법', '놀이법', '운동법', '질병정보'
+          ]}
+          maxTags={5}
+          acceptValueOnBlur
+          clearable
+          description="최대 5개까지 선택 가능합니다. 엔터키로 추가하세요."
         />
 
         {/* 제목 입력 */}

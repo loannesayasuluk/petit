@@ -21,6 +21,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../lib/firebase';
 import type { CommunityPost } from '../types';
 import { COLLECTIONS } from '../types';
+import { incrementTagCounts, decrementTagCounts } from './tagService';
 
 // 게시물 생성
 export const createPost = async (
@@ -47,6 +48,12 @@ export const createPost = async (
 
     // Firestore에 저장
     const docRef = await addDoc(collection(db, COLLECTIONS.POSTS), postToSave);
+    
+    // 태그 카운트 증가
+    if (postData.tags && postData.tags.length > 0) {
+      await incrementTagCounts(postData.tags);
+    }
+    
     return docRef.id;
   } catch (error) {
     console.error('게시물 생성 오류:', error);
@@ -72,20 +79,41 @@ const uploadImages = async (images: File[], folder: string): Promise<string[]> =
 export const getPosts = async (
   limitCount: number = 10,
   lastDoc?: any,
-  category?: string
+  category?: string,
+  tag?: string
 ) => {
   try {
-    let q = query(
+      let q = query(
+    collection(db, COLLECTIONS.POSTS),
+    orderBy('createdAt', 'desc'),
+    limit(limitCount)
+  );
+
+  // 카테고리 필터
+  if (category && category !== '전체') {
+    q = query(
       collection(db, COLLECTIONS.POSTS),
+      where('category', '==', category),
       orderBy('createdAt', 'desc'),
       limit(limitCount)
     );
+  }
 
-    // 카테고리 필터
-    if (category && category !== '전체') {
+  // 태그 필터
+  if (tag) {
+    q = query(
+      collection(db, COLLECTIONS.POSTS),
+      where('tags', 'array-contains', tag),
+      orderBy('createdAt', 'desc'),
+      limit(limitCount)
+    );
+  }
+
+    // 태그 필터
+    if (tag) {
       q = query(
         collection(db, COLLECTIONS.POSTS),
-        where('category', '==', category),
+        where('tags', 'array-contains', tag),
         orderBy('createdAt', 'desc'),
         limit(limitCount)
       );
@@ -167,8 +195,20 @@ export const updatePost = async (
 // 게시물 삭제
 export const deletePost = async (postId: string): Promise<void> => {
   try {
-    const docRef = doc(db, COLLECTIONS.POSTS, postId);
-    await deleteDoc(docRef);
+    // 삭제 전 태그 정보 조회
+    const postDoc = await getDoc(doc(db, COLLECTIONS.POSTS, postId));
+    if (postDoc.exists()) {
+      const postData = postDoc.data() as CommunityPost;
+      
+      // 게시물 삭제
+      const docRef = doc(db, COLLECTIONS.POSTS, postId);
+      await deleteDoc(docRef);
+      
+      // 태그 카운트 감소
+      if (postData.tags && postData.tags.length > 0) {
+        await decrementTagCounts(postData.tags);
+      }
+    }
   } catch (error) {
     console.error('게시물 삭제 오류:', error);
     throw error;
@@ -244,7 +284,8 @@ export const subscribeToPost = (
 export const subscribeToPosts = (
   callback: (posts: CommunityPost[]) => void,
   category?: string,
-  limitCount: number = 10
+  limitCount: number = 10,
+  tag?: string
 ) => {
   let q = query(
     collection(db, COLLECTIONS.POSTS),
@@ -257,6 +298,16 @@ export const subscribeToPosts = (
     q = query(
       collection(db, COLLECTIONS.POSTS),
       where('category', '==', category),
+      orderBy('createdAt', 'desc'),
+      limit(limitCount)
+    );
+  }
+
+  // 태그 필터 적용
+  if (tag) {
+    q = query(
+      collection(db, COLLECTIONS.POSTS),
+      where('tags', 'array-contains', tag),
       orderBy('createdAt', 'desc'),
       limit(limitCount)
     );

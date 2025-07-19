@@ -1,21 +1,40 @@
-import { Card, Title, Group, Badge, Stack, Text } from '@mantine/core';
+import { Card, Title, Group, Badge, Stack, Text, Loader, Center } from '@mantine/core';
 import { IconTrendingUp } from '@tabler/icons-react';
+import { useState, useEffect } from 'react';
+import { getTopTags } from '../services/tagService';
+import type { Tag } from '../types';
 
 interface TrendingSidebarProps {
   className?: string;
+  onTagClick?: (tagName: string) => void;
 }
 
-export function TrendingSidebar({ className }: TrendingSidebarProps) {
-  const trendingTags = [
-    { tag: '사료추천', count: 42, color: 'warm-coral' },
-    { tag: '건강상식', count: 38, color: 'soft-sky' },
-    { tag: '산책꿀팁', count: 31, color: 'fresh-green' },
-    { tag: '응급처치', count: 24, color: 'health-red' },
-    { tag: '훈련법', count: 19, color: 'sunny-yellow' },
-    { tag: '용품리뷰', count: 16, color: 'comfort-purple' },
-    { tag: '미용법', count: 12, color: 'neutral-gray' },
-    { tag: '놀이법', count: 8, color: 'safety-orange' }
+export function TrendingSidebar({ className, onTagClick }: TrendingSidebarProps) {
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const tagColors = [
+    'warm-coral', 'soft-sky', 'fresh-green', 'health-red', 
+    'sunny-yellow', 'comfort-purple', 'neutral-gray', 'safety-orange'
   ];
+
+  useEffect(() => {
+    const loadTrendingTags = async () => {
+      try {
+        setLoading(true);
+        const topTags = await getTopTags(8);
+        setTags(topTags);
+      } catch (error) {
+        console.error('인기 태그 로딩 오류:', error);
+        // 에러 시 빈 배열 유지
+        setTags([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTrendingTags();
+  }, []);
 
   return (
     <div className={className}>
@@ -27,28 +46,43 @@ export function TrendingSidebar({ className }: TrendingSidebarProps) {
           </Title>
         </Group>
         
-        <Stack gap="xs">
-          {trendingTags.map((item, index) => (
-            <Group key={item.tag} justify="space-between" style={{ cursor: 'pointer' }}>
-              <Group gap="xs">
-                <Text size="sm" fw={500} c="dimmed">
-                  #{index + 1}
+        {loading ? (
+          <Center py="md">
+            <Loader size="sm" />
+          </Center>
+        ) : tags.length === 0 ? (
+          <Text size="sm" c="dimmed" ta="center" py="md">
+            아직 인기 태그가 없어요.<br />
+            첫 번째 태그를 만들어보세요! ✨
+          </Text>
+        ) : (
+          <Stack gap="xs">
+            {tags.map((tag, index) => (
+              <Group 
+                key={tag.id} 
+                justify="space-between" 
+                style={{ cursor: 'pointer' }}
+                onClick={() => onTagClick?.(tag.id)}
+              >
+                <Group gap="xs">
+                  <Text size="sm" fw={500} c="dimmed">
+                    #{index + 1}
+                  </Text>
+                  <Badge 
+                    variant="light" 
+                    color={tagColors[index % tagColors.length]}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    #{tag.id}
+                  </Badge>
+                </Group>
+                <Text size="xs" c="dimmed">
+                  {tag.count}개
                 </Text>
-                <Badge 
-                  variant="light" 
-                  color={item.color}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => console.log(`태그 클릭: ${item.tag}`)}
-                >
-                  #{item.tag}
-                </Badge>
               </Group>
-              <Text size="xs" c="dimmed">
-                {item.count}개
-              </Text>
-            </Group>
-          ))}
-        </Stack>
+            ))}
+          </Stack>
+        )}
         
         <Text size="xs" c="dimmed" mt="md" ta="center">
           💡 태그를 클릭하면 관련 게시물을 볼 수 있어요
