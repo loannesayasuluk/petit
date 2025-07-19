@@ -17,14 +17,8 @@ export default defineConfig({
         }
       }
     },
-    // 압축 최적화
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true, // 프로덕션에서 console.log 제거
-        drop_debugger: true
-      }
-    }
+    // 압축 최적화 (간단한 설정으로 변경)
+    minify: 'terser'
   },
   
   // 개발 서버 최적화
