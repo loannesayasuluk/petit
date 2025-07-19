@@ -56,6 +56,7 @@ export const samplePosts: CommunityPost[] = [
 정말 신기하고 감동적이었어서 영상도 찍었는데 너무 귀여워요. 햄스터 키우시는 분들은 이런 경험 있으신가요?`,
     author: sampleUsers[0],
     category: '일상',
+    tags: ['사료추천', '훈련법', '햄스터'],
     imageUrls: [
       'https://images.unsplash.com/photo-1583337130417-2346a1be284c?q=80&w=800',
       'https://images.unsplash.com/photo-1548767797-d8c844163c4c?q=80&w=800'
@@ -77,6 +78,7 @@ export const samplePosts: CommunityPost[] = [
 전문가분들이나 비슷한 경험 있으신 분들의 조언 부탁드립니다!`,
     author: sampleUsers[1],
     category: '건강',
+    tags: ['건강상식', '질병정보', '앵무새'],
     likes: ['sample-user-1', 'sample-user-3'],
     viewCount: 89,
     createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4시간 전
@@ -99,6 +101,7 @@ export const samplePosts: CommunityPost[] = [
 우리 비어디드래곤 '킹'이 정말 좋아해요! 설계도와 제작 과정도 공유할게요.`,
     author: sampleUsers[2],
     category: 'DIY',
+    tags: ['DIY', '파충류', '사육장'],
     imageUrls: [
       'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?q=80&w=800',
       'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=800',
@@ -132,6 +135,7 @@ export const samplePosts: CommunityPost[] = [
 밤송이는 목욕을 싫어했는데 이 방법으로 하니까 순해졌어요!`,
     author: sampleUsers[3],
     category: '꿀팁',
+    tags: ['미용법', '건강상식', '고슴도치'],
     imageUrls: [
       'https://images.unsplash.com/photo-1618336753974-aae8e04506aa?q=80&w=800'
     ],
@@ -157,6 +161,7 @@ export const samplePosts: CommunityPost[] = [
 너무 걱정돼서 잠을 못 잤어요 😭`,
     author: sampleUsers[4],
     category: '응급',
+    tags: ['응급처치', '건강상식', '토끼'],
     likes: ['sample-user-2'],
     viewCount: 134,
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1일 전
@@ -176,6 +181,7 @@ ASMR 좋아하시는 분들한테 추천드려요!
 #친칠라 #모래목욕 #ASMR #힐링`,
     author: sampleUsers[0],
     category: '영상',
+    tags: ['영상', 'ASMR', '친칠라'],
     likes: ['sample-user-1', 'sample-user-2', 'sample-user-3', 'sample-user-4'],
     viewCount: 312,
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2일 전
