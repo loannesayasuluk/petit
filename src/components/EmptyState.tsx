@@ -1,4 +1,4 @@
-import { Stack, Text, Button, Box, Group } from '@mantine/core';
+import { Stack, Text, Button, Box } from '@mantine/core';
 
 interface EmptyStateProps {
   icon?: string;

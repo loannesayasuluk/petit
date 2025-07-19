@@ -19,7 +19,6 @@ import {
 import { 
   IconHeart, 
   IconEye, 
-  IconBook, 
   IconHeartFilled,
   IconAlertCircle,
   IconStethoscope,

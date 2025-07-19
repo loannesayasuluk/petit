@@ -1,12 +1,10 @@
-import { Modal, Button, Group, Text, Stack, Stepper, Box, Card, Image, Badge, ThemeIcon } from '@mantine/core';
+import { Modal, Button, Group, Text, Stack, Stepper, Box, Card, Badge, ThemeIcon } from '@mantine/core';
 import { useState } from 'react';
 import { 
-  IconPaw, 
   IconHeart, 
   IconBook, 
   IconMessage, 
   IconSearch, 
-  IconUser,
   IconCheck,
   IconChevronRight,
   IconStars
