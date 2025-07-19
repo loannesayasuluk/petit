@@ -1,4 +1,4 @@
-import { Title, Text, Button, Group, Box, Grid, Image, Card, SimpleGrid, Divider, Loader, Center, Stack } from '@mantine/core';
+import { Title, Text, Button, Group, Box, Grid, Image, Card, SimpleGrid, Loader, Center, Stack } from '@mantine/core';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { useState, useEffect } from 'react';
 import { getPosts } from '../services/postService';
