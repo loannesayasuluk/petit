@@ -11,10 +11,10 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
   const { ref, isVisible } = useScrollAnimation();
   
   return (
-    <Box py="xl">
+    <Box py="md">
       <Grid 
         align="center" 
-        gutter={40}
+        gutter={32}
         ref={ref}
         style={{
           opacity: isVisible ? 1 : 0,
@@ -32,14 +32,26 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
         </Text>
         
         {/* 따뜻한 커뮤니티 분위기 */}
-        <Group gap="lg" mb="sm">
-          <Group gap="xs">
-            <Text size="xs" c="warm-coral">💝</Text>
-            <Text size="xs" c="dimmed">오늘 나눈 경험담 <strong>43개</strong></Text>
+        <Group gap="lg" mb="md">
+          <Group gap="xs" style={{ 
+            background: 'rgba(241, 114, 88, 0.1)', 
+            padding: '8px 12px', 
+            borderRadius: '8px',
+            border: '1px solid rgba(241, 114, 88, 0.2)'
+          }}>
+            <Text size="md" c="warm-coral">💝</Text>
+            <Text size="sm" fw={600} c="warm-coral">오늘 나눈 경험담</Text>
+            <Text size="lg" fw={800} c="warm-coral">43개</Text>
           </Group>
-          <Group gap="xs">
-            <Text size="xs" c="blue">🤝</Text>
-            <Text size="xs" c="dimmed">도움받은 집사 <strong>89명</strong></Text>
+          <Group gap="xs" style={{ 
+            background: 'rgba(14, 165, 233, 0.1)', 
+            padding: '8px 12px', 
+            borderRadius: '8px',
+            border: '1px solid rgba(14, 165, 233, 0.2)'
+          }}>
+            <Text size="md" c="blue">🤝</Text>
+            <Text size="sm" fw={600} c="blue">도움받은 집사</Text>
+            <Text size="lg" fw={800} c="blue">89명</Text>
           </Group>
         </Group>
         <Group>
@@ -73,6 +85,7 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
           radius="xl" 
           src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?q=80&w=600&auto=format&fit=crop" 
           alt="귀여운 애완동물들이 함께 있는 모습"
+          h={300}
           style={{ 
             transition: 'all 0.3s ease',
             cursor: 'pointer',
@@ -91,7 +104,7 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
     </Grid>
 
     {/* 집사들의 핵심 가치 */}
-    <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md" mt="lg">
+    <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md" mt="md">
       <Card 
         withBorder 
         radius="lg" 
@@ -187,7 +200,7 @@ function RecentPosts({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'know
   
   return (
     <Box 
-      my={20}
+      my="md"
       ref={ref}
       style={{
         opacity: isVisible ? 1 : 0,
