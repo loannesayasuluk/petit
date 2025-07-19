@@ -36,7 +36,7 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
           <Group gap="xs" style={{ 
             background: 'rgba(241, 114, 88, 0.1)', 
             padding: '8px 12px', 
-            borderRadius: '8px',
+            borderRadius: '12px',
             border: '1px solid rgba(241, 114, 88, 0.2)'
           }}>
             <Text size="md" c="warm-coral">💝</Text>
@@ -46,7 +46,7 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
           <Group gap="xs" style={{ 
             background: 'rgba(14, 165, 233, 0.1)', 
             padding: '8px 12px', 
-            borderRadius: '8px',
+            borderRadius: '12px',
             border: '1px solid rgba(14, 165, 233, 0.2)'
           }}>
             <Text size="md" c="blue">🤝</Text>
@@ -57,6 +57,7 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
         <Group>
           <Button 
             size="lg"
+            radius="md"
             onClick={() => setCurrentPage('community')}
             style={{ 
               background: 'linear-gradient(135deg, #f17258 0%, #facc15 100%)',
@@ -236,6 +237,7 @@ function RecentPosts({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'know
             <Card 
               key={post.id}
               withBorder 
+              radius="lg"
               {...cardHoverProps}
             >
               <Text fw={700} lineClamp={2}>
