@@ -14,7 +14,8 @@ import {
   Alert,
   Image,
   SimpleGrid,
-  ActionIcon
+  ActionIcon,
+  Paper
 } from '@mantine/core';
 import { 
   IconHeart, 
@@ -379,13 +380,29 @@ export function KnowledgePage() {
             cols={{ base: 1, sm: 2, md: 3 }} 
             spacing="lg"
           >
-            {articles.map((article) => (
-              <ArticleCard 
-                key={article.id} 
-                article={article} 
-                onLike={handleLike}
-                currentUserId={currentUser?.uid}
-              />
+            {articles.map((article, index) => (
+              index === 0 ? (
+                <Paper 
+                  key={article.id}
+                  variant="filled" 
+                  style={{ backgroundColor: 'var(--mantine-color-warm-coral-0)' }}
+                  p="xs"
+                  radius="lg"
+                >
+                  <ArticleCard 
+                    article={article} 
+                    onLike={handleLike}
+                    currentUserId={currentUser?.uid}
+                  />
+                </Paper>
+              ) : (
+                <ArticleCard 
+                  key={article.id} 
+                  article={article} 
+                  onLike={handleLike}
+                  currentUserId={currentUser?.uid}
+                />
+              )
             ))}
           </SimpleGrid>
         )}
@@ -401,7 +418,7 @@ export function KnowledgePage() {
             원하는 정보를 찾지 못했다면 커뮤니티에서<br />
             전문가들에게 직접 질문해보세요!
           </Text>
-          <Group justify="center" gap="md">
+          <Group justify="center" gap="md" mb="lg">
             <Badge size="lg" variant="outline" color="warm-coral">
               전문가 검증
             </Badge>
@@ -411,6 +428,14 @@ export function KnowledgePage() {
             <Badge size="lg" variant="outline" color="blue">
               체계적 정리
             </Badge>
+          </Group>
+          <Group justify="center" gap="md">
+            <Button variant="outline" size="md">
+              🚀 커뮤니티에서 질문하기
+            </Button>
+            <Button variant="default" size="md">
+              📚 전체 가이드 보기
+            </Button>
           </Group>
         </Box>
       )}

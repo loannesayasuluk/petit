@@ -42,6 +42,7 @@ import type { CommunityPost } from '../types';
 import { POST_CATEGORIES } from '../types';
 import { formatTimeAgo, getCategoryColor, cardHoverProps, likeButtonProps } from '../lib/utils';
 import { EmptyState } from '../components/EmptyState';
+import { TrendingSidebar } from '../components/TrendingSidebar';
 
 
 
@@ -395,63 +396,73 @@ export function CommunityPage() {
         </Alert>
       )}
 
-      {/* 게시글 목록 */}
-      <Box
-        ref={ref}
-        style={{
-          opacity: isVisible ? 1 : 0,
-          transform: isVisible ? 'translateY(0px)' : 'translateY(30px)',
-          transition: 'all 0.8s ease-out'
-        }}
-      >
-        {loading && posts.length === 0 ? (
-          <Center py="xl">
-            <Stack align="center" gap="md">
-              <Loader size="lg" />
-              <Text c="dimmed">게시물을 불러오는 중...</Text>
-            </Stack>
-          </Center>
-        ) : posts.length === 0 ? (
-          <EmptyState
-            illustration="posts"
-            title="아직 이야기가 시작되지 않았어요!"
-            description={
-              selectedCategory === '전체' 
-                ? "집사들의 첫 번째 이야기를 기다리고 있어요. 우리 애기들의 소중한 순간을 나누어 주세요! 🐾✨"
-                : `${selectedCategory} 관련 이야기가 아직 없어요. 첫 번째 이야기의 주인공이 되어보세요!`
-            }
-            actionText={currentUser ? "✍️ 첫 이야기 쓰기" : "🚀 로그인하고 글쓰기"}
-            onAction={() => {
-              if (currentUser) {
-                setWriteModalOpened(true);
-              } else {
-                // TODO: 로그인 모달 열기
-                console.log('로그인 필요');
-              }
+      {/* 메인 콘텐츠: 2단 그리드 */}
+      <Grid>
+        {/* 게시글 목록 - 2/3 */}
+        <Grid.Col span={{ base: 12, md: 8 }}>
+          <Box
+            ref={ref}
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'translateY(0px)' : 'translateY(30px)',
+              transition: 'all 0.8s ease-out'
             }}
-            size="md"
-          />
-        ) : (
-          <Stack gap="md">
-            {posts.map((post) => (
-              <PostCard 
-                key={post.id} 
-                post={post} 
-                onLike={handleLike}
-                currentUserId={currentUser?.uid}
-                commentCount={commentCounts[post.id] || 0}
-              />
-            ))}
-            
-            {/* 실시간 구독으로 더 보기 버튼 불필요 */}
-            {loading && (
+          >
+            {loading && posts.length === 0 ? (
               <Center py="xl">
-                <Loader size="md" />
+                <Stack align="center" gap="md">
+                  <Loader size="lg" />
+                  <Text c="dimmed">게시물을 불러오는 중...</Text>
+                </Stack>
               </Center>
+            ) : posts.length === 0 ? (
+              <EmptyState
+                illustration="posts"
+                title="아직 이야기가 시작되지 않았어요!"
+                description={
+                  selectedCategory === '전체' 
+                    ? "집사들의 첫 번째 이야기를 기다리고 있어요. 우리 애기들의 소중한 순간을 나누어 주세요! 🐾✨"
+                    : `${selectedCategory} 관련 이야기가 아직 없어요. 첫 번째 이야기의 주인공이 되어보세요!`
+                }
+                actionText={currentUser ? "✍️ 첫 이야기 쓰기" : "🚀 로그인하고 글쓰기"}
+                onAction={() => {
+                  if (currentUser) {
+                    setWriteModalOpened(true);
+                  } else {
+                    // TODO: 로그인 모달 열기
+                    console.log('로그인 필요');
+                  }
+                }}
+                size="md"
+              />
+            ) : (
+              <Stack gap="md">
+                {posts.map((post) => (
+                  <PostCard 
+                    key={post.id} 
+                    post={post} 
+                    onLike={handleLike}
+                    currentUserId={currentUser?.uid}
+                    commentCount={commentCounts[post.id] || 0}
+                  />
+                ))}
+                
+                {/* 실시간 구독으로 더 보기 버튼 불필요 */}
+                {loading && (
+                  <Center py="xl">
+                    <Loader size="md" />
+                  </Center>
+                )}
+              </Stack>
             )}
-          </Stack>
-        )}
-      </Box>
+          </Box>
+        </Grid.Col>
+
+        {/* 사이드바 - 1/3 */}
+        <Grid.Col span={{ base: 12, md: 4 }}>
+          <TrendingSidebar />
+        </Grid.Col>
+      </Grid>
 
       {/* 안내 메시지 */}
       {posts.length > 0 && (
@@ -463,7 +474,7 @@ export function CommunityPage() {
             우리 애기들의 재미있는 이야기나 궁금한 점이 있다면<br />
             언제든지 글을 올려주세요
           </Text>
-          <Group justify="center" gap="md">
+          <Group justify="center" gap="md" mb="lg">
             <Badge size="lg" variant="outline" color="warm-coral">
               실시간 답변
             </Badge>
@@ -473,6 +484,24 @@ export function CommunityPage() {
             <Badge size="lg" variant="outline" color="blue">
               따뜻한 소통
             </Badge>
+          </Group>
+          <Group justify="center" gap="md">
+            {currentUser ? (
+              <Button 
+                variant="outline" 
+                size="md"
+                onClick={() => setWriteModalOpened(true)}
+              >
+                ✍️ 새 이야기 쓰기
+              </Button>
+            ) : (
+              <Button variant="outline" size="md">
+                🚀 로그인하고 글쓰기
+              </Button>
+            )}
+            <Button variant="default" size="md">
+              📚 전문가 가이드 보기
+            </Button>
           </Group>
         </Box>
       )}
