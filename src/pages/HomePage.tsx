@@ -20,28 +20,28 @@ function WelcomeSection() {
           opacity: isVisible ? 1 : 0,
           transform: isVisible ? 'translateY(0px)' : 'translateY(20px)',
           transition: 'all 0.6s ease-out',
-          minHeight: '35vh', // 더욱 축소
-          maxHeight: '40vh'
+          minHeight: '30vh', // 적정 축소
+          maxHeight: '32vh'
         }}
       >
       <Grid.Col span={{ base: 12, md: 6 }}>
         <Title order={1} fz={{ base: '1.8rem', md: '2.4rem' }} lh={1.2} fw={800}>
-          우리 애기 궁금한 것,<br/>바로 물어보세요! 🐾
+          처음 키우는데 막막하세요?<br/>선배 집사들이 도와드려요! 💕
         </Title>
         <Text c="dimmed" mt="sm" mb="md" fz="sm">
-          전문가와 경험 많은 집사들이 실시간으로 답해드려요<br/>
-          지금 <strong>1,247명</strong>이 함께하고 있어요!
+          실전 경험담과 따뜻한 조언으로 함께 성장해요<br/>
+          지금 <strong>247명의 집사들</strong>이 경험을 나누고 있어요!
         </Text>
         
-        {/* 실시간 활동 통계 */}
+        {/* 따뜻한 커뮤니티 분위기 */}
         <Group gap="lg" mb="sm">
           <Group gap="xs">
-            <Text size="xs" c="green">●</Text>
-            <Text size="xs" c="dimmed">오늘 답변 <strong>89개</strong></Text>
+            <Text size="xs" c="warm-coral">💝</Text>
+            <Text size="xs" c="dimmed">오늘 나눈 경험담 <strong>43개</strong></Text>
           </Group>
           <Group gap="xs">
-            <Text size="xs" c="blue">●</Text>
-            <Text size="xs" c="dimmed">해결된 질문 <strong>423개</strong></Text>
+            <Text size="xs" c="blue">🤝</Text>
+            <Text size="xs" c="dimmed">도움받은 집사 <strong>89명</strong></Text>
           </Group>
         </Group>
         <Group>
@@ -65,7 +65,7 @@ function WelcomeSection() {
               e.currentTarget.style.boxShadow = '0 4px 15px rgba(241, 114, 88, 0.3)';
             }}
           >
-            💬 무료로 질문하기
+            🤗 집사 선배들과 이야기하기
           </Button>
         </Group>
       </Grid.Col>
@@ -91,7 +91,7 @@ function WelcomeSection() {
       </Grid.Col>
     </Grid>
 
-    {/* 실제 사용 사례 미리보기 */}
+    {/* 집사들의 핵심 가치 */}
     <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md" mt="lg">
       <Card 
         withBorder 
@@ -106,10 +106,10 @@ function WelcomeSection() {
         onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
         onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0px)'}
       >
-        <Text size="1.5rem" mb="xs">😰</Text>
-        <Text fw={600} size="sm" mb="xs">"우리 강아지가 안 먹어요"</Text>
-        <Text size="xs" c="dimmed">→ 전문가 답변 12개</Text>
-        <Text size="xs" c="blue" mt="xs">지금 바로 질문하기</Text>
+        <Text size="1.5rem" mb="xs">💬</Text>
+        <Text fw={600} size="sm" mb="xs">실전 경험담</Text>
+        <Text size="xs" c="dimmed">"저희 집 멍멍이도 그랬어요"</Text>
+        <Text size="xs" c="blue" mt="xs">경험담 더 보기</Text>
       </Card>
       <Card 
         withBorder 
@@ -124,10 +124,10 @@ function WelcomeSection() {
         onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
         onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0px)'}
       >
-        <Text size="1.5rem" mb="xs">🏥</Text>
-        <Text fw={600} size="sm" mb="xs">"응급처치 어떻게 하나요?"</Text>
-        <Text size="xs" c="dimmed">→ 수의사 검증 가이드</Text>
-        <Text size="xs" c="blue" mt="xs">응급 가이드 보기</Text>
+        <Text size="1.5rem" mb="xs">📚</Text>
+        <Text fw={600} size="sm" mb="xs">집사 꿀팁</Text>
+        <Text size="xs" c="dimmed">"3년 키우면서 깨달은 것들"</Text>
+        <Text size="xs" c="blue" mt="xs">꿀팁 모아보기</Text>
       </Card>
       <Card 
         withBorder 
@@ -142,10 +142,10 @@ function WelcomeSection() {
         onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
         onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0px)'}
       >
-        <Text size="1.5rem" mb="xs">💡</Text>
-        <Text fw={600} size="sm" mb="xs">"사료 추천해주세요"</Text>
-        <Text size="xs" c="dimmed">→ 실전 후기 43개</Text>
-        <Text size="xs" c="blue" mt="xs">후기 더 보기</Text>
+        <Text size="1.5rem" mb="xs">🤝</Text>
+        <Text fw={600} size="sm" mb="xs">따뜻한 소통</Text>
+        <Text size="xs" c="dimmed">"혼자 고민하지 마세요"</Text>
+        <Text size="xs" c="blue" mt="xs">함께 이야기하기</Text>
       </Card>
     </SimpleGrid>
     </Box>
@@ -197,15 +197,15 @@ function RecentPosts() {
       }}
     >
       <Group justify="space-between" mb="md">
-        <Title order={2}>지금 집사들이 묻고 있는 질문들 🔥</Title>
-        <Text size="sm" c="dimmed">실시간 업데이트</Text>
+        <Title order={2}>집사들의 따뜻한 이야기 🌟</Title>
+        <Text size="sm" c="dimmed">지금 나누고 있는 경험들</Text>
       </Group>
       
       {loading ? (
         <Center py="xl">
           <Stack align="center" gap="md">
             <Loader size="lg" />
-            <Text c="dimmed">최신 소식을 불러오는 중...</Text>
+            <Text c="dimmed">집사들의 따뜻한 이야기를 불러오는 중...</Text>
           </Stack>
         </Center>
       ) : posts.length === 0 ? (
@@ -213,7 +213,7 @@ function RecentPosts() {
           illustration="posts"
           title="아직 이야기가 없어요!"
           description="우리 애기들의 첫 번째 이야기를 기다리고 있어요. 따뜻한 소통의 시작이 되어주세요! 💕"
-          actionText="🚀 집사 라운지 구경가기"
+          actionText="🤗 집사들과 이야기 나누기"
           onAction={() => {
             // TODO: 커뮤니티 페이지로 이동
             console.log('커뮤니티로 이동');
