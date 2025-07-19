@@ -7,21 +7,19 @@ import { formatTimeAgo, cardHoverProps } from '../lib/utils';
 import { EmptyState } from '../components/EmptyState';
 import { OnboardingModal } from '../components/OnboardingModal';
 
-function WelcomeSection() {
+function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'knowledge' | 'community' | 'mypage') => void }) {
   const { ref, isVisible } = useScrollAnimation();
   
   return (
-    <Box py="md">
+    <Box py="xl">
       <Grid 
         align="center" 
-        gutter={20}
+        gutter={40}
         ref={ref}
         style={{
           opacity: isVisible ? 1 : 0,
           transform: isVisible ? 'translateY(0px)' : 'translateY(20px)',
-          transition: 'all 0.6s ease-out',
-          minHeight: '30vh', // 적정 축소
-          maxHeight: '32vh'
+          transition: 'all 0.6s ease-out'
         }}
       >
       <Grid.Col span={{ base: 12, md: 6 }}>
@@ -46,7 +44,8 @@ function WelcomeSection() {
         </Group>
         <Group>
           <Button 
-            size="lg" 
+            size="lg"
+            onClick={() => setCurrentPage('community')}
             style={{ 
               background: 'linear-gradient(135deg, #f17258 0%, #facc15 100%)',
               border: 'none',
@@ -152,7 +151,7 @@ function WelcomeSection() {
   );
 }
 
-function RecentPosts() {
+function RecentPosts({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'knowledge' | 'community' | 'mypage') => void }) {
   const { ref, isVisible } = useScrollAnimation();
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -214,10 +213,7 @@ function RecentPosts() {
           title="아직 이야기가 없어요!"
           description="우리 애기들의 첫 번째 이야기를 기다리고 있어요. 따뜻한 소통의 시작이 되어주세요! 💕"
           actionText="🤗 집사들과 이야기 나누기"
-          onAction={() => {
-            // TODO: 커뮤니티 페이지로 이동
-            console.log('커뮤니티로 이동');
-          }}
+          onAction={() => setCurrentPage('community')}
           size="md"
         />
       ) : (
@@ -245,7 +241,11 @@ function RecentPosts() {
   );
 }
 
-export function HomePage() {
+interface HomePageProps {
+  setCurrentPage: (page: 'home' | 'knowledge' | 'community' | 'mypage') => void;
+}
+
+export function HomePage({ setCurrentPage }: HomePageProps) {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   // 첫 방문자 감지
@@ -272,8 +272,8 @@ export function HomePage() {
 
   return (
     <>
-      <WelcomeSection />
-      <RecentPosts />
+      <WelcomeSection setCurrentPage={setCurrentPage} />
+      <RecentPosts setCurrentPage={setCurrentPage} />
       
       <OnboardingModal
         opened={showOnboarding}

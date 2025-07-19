@@ -27,7 +27,7 @@ export default function App() {
       case 'mypage':
         return <MyPage />;
       default:
-        return <HomePage />;
+        return <HomePage setCurrentPage={setCurrentPage} />;
     }
   };
 
