@@ -11,23 +11,25 @@ function WelcomeSection() {
   const { ref, isVisible } = useScrollAnimation();
   
   return (
-    <Grid 
-      align="center" 
-      gutter={40}
-      ref={ref}
-      style={{
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0px)' : 'translateY(30px)',
-        transition: 'all 0.8s ease-out'
-      }}
-    >
+    <>
+      <Grid 
+        align="center" 
+        gutter={30}
+        ref={ref}
+        style={{
+          opacity: isVisible ? 1 : 0,
+          transform: isVisible ? 'translateY(0px)' : 'translateY(30px)',
+          transition: 'all 0.8s ease-out',
+          minHeight: '60vh' // 높이 축소
+        }}
+      >
       <Grid.Col span={{ base: 12, md: 6 }}>
-        <Title order={1} fz={{ base: '2.5rem', md: '3.5rem' }} lh={1.3} fw={800}>
-          초보 집사도 안심하는<br/>우리 애기 케어 가이드
+        <Title order={1} fz={{ base: '2rem', md: '2.8rem' }} lh={1.2} fw={800}>
+          초보 집사를 위한<br/>전문 케어 플랫폼
         </Title>
-        <Text c="dimmed" mt="lg" mb="xl" fz="lg">
-          전문가 검증 정보와 경험 많은 집사들의 실전 노하우로<br/>
-          처음 키우는 애기도 건강하고 행복하게! 🐾
+        <Text c="dimmed" mt="md" mb="lg" fz="md">
+          실시간 소통 • 전문가 가이드 • 스마트 검색<br/>
+          우리 애기 케어의 모든 것! 🐾
         </Text>
         <Group>
           <Button 
@@ -75,6 +77,26 @@ function WelcomeSection() {
         />
       </Grid.Col>
     </Grid>
+
+    {/* 첫 화면에 핵심 기능 미리보기 */}
+    <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="lg" mt="xl">
+      <Card withBorder radius="lg" p="lg" style={{ textAlign: 'center' }}>
+        <Text size="2rem" mb="sm">💬</Text>
+        <Text fw={600} mb="xs">실시간 소통</Text>
+        <Text size="sm" c="dimmed">집사들과 경험 공유</Text>
+      </Card>
+      <Card withBorder radius="lg" p="lg" style={{ textAlign: 'center' }}>
+        <Text size="2rem" mb="sm">📚</Text>
+        <Text fw={600} mb="xs">전문가 가이드</Text>
+        <Text size="sm" c="dimmed">수의사 검증 정보</Text>
+      </Card>
+      <Card withBorder radius="lg" p="lg" style={{ textAlign: 'center' }}>
+        <Text size="2rem" mb="sm">🔍</Text>
+        <Text fw={600} mb="xs">스마트 검색</Text>
+        <Text size="sm" c="dimmed">Ctrl+K로 빠른 검색</Text>
+      </Card>
+    </SimpleGrid>
+    </>
   );
 }
 
@@ -114,15 +136,15 @@ function RecentPosts() {
   
   return (
     <Box 
-      my={80}
+      my={40}
       ref={ref}
       style={{
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0px)' : 'translateY(50px)',
-        transition: 'all 1s ease-out 0.2s'
+        transform: isVisible ? 'translateY(0px)' : 'translateY(30px)',
+        transition: 'all 0.8s ease-out 0.1s'
       }}
     >
-      <Divider my="xl" labelPosition="center" label={<Title order={2}>최신 커뮤니티 소식 💬</Title>} />
+      <Divider my="md" labelPosition="center" label={<Title order={2}>최신 커뮤니티 소식 💬</Title>} />
       
       {loading ? (
         <Center py="xl">
