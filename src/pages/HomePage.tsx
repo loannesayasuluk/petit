@@ -41,7 +41,7 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
           }}>
             <Text size="md" c="warm-coral">💝</Text>
             <Text size="sm" fw={600} c="warm-coral">오늘 나눈 경험담</Text>
-            <Text size="lg" fw={800} c="warm-coral">43개</Text>
+            <Text size="lg" fw={800} c="warm-coral">42개</Text>
           </Group>
           <Group gap="xs" style={{ 
             background: 'rgba(14, 165, 233, 0.1)', 
