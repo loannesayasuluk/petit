@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { getPosts } from '../services/postService';
 import type { CommunityPost } from '../types';
+import { EmptyState } from '../components/EmptyState';
 
 const userProfile = {
   nickname: '햄찌사랑',
@@ -319,16 +320,17 @@ export function MyPage() {
                     </Stack>
                   </Center>
                 ) : userPosts.length === 0 ? (
-                  <Center py="xl">
-                    <Stack align="center" gap="md">
-                      <Text size="lg" c="dimmed">
-                        아직 작성한 게시물이 없습니다
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        첫 번째 이야기를 들려주세요!
-                      </Text>
-                    </Stack>
-                  </Center>
+                  <EmptyState
+                    illustration="profile"
+                    title="아직 작성한 이야기가 없어요!"
+                    description="우리 애기들의 소중한 순간들을 나누어 주세요. 첫 번째 이야기가 멋진 시작이 될 거예요! 🌟"
+                    actionText="✍️ 첫 이야기 쓰기"
+                    onAction={() => {
+                      // TODO: 글쓰기 모달 열기 또는 커뮤니티로 이동
+                      console.log('글쓰기 시작');
+                    }}
+                    size="sm"
+                  />
                 ) : (
                   <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
                     {userPosts.map((post) => (
@@ -339,17 +341,31 @@ export function MyPage() {
               </Tabs.Panel>
 
               <Tabs.Panel value="likes" pt="lg">
-                <Text c="dimmed" ta="center" py="xl">
-                  좋아요한 글이 없습니다 💔<br />
-                  마음에 드는 글에 좋아요를 눌러보세요!
-                </Text>
+                <EmptyState
+                  icon="💖"
+                  title="좋아요한 글이 없어요!"
+                  description="마음에 드는 글들에 좋아요를 눌러보세요. 나만의 좋아요 컬렉션을 만들어가요!"
+                  actionText="🚀 좋아요할 글 찾기"
+                  onAction={() => {
+                    // TODO: 커뮤니티로 이동
+                    console.log('커뮤니티로 이동');
+                  }}
+                  size="sm"
+                />
               </Tabs.Panel>
 
               <Tabs.Panel value="bookmarks" pt="lg">
-                <Text c="dimmed" ta="center" py="xl">
-                  북마크한 글이 없습니다 📖<br />
-                  나중에 다시 보고 싶은 글을 북마크해보세요!
-                </Text>
+                <EmptyState
+                  icon="📚"
+                  title="북마크한 글이 없어요!"
+                  description="나중에 다시 보고 싶은 유용한 정보들을 북마크해서 나만의 지식 라이브러리를 만들어보세요!"
+                  actionText="📖 전문가 가이드 보기"
+                  onAction={() => {
+                    // TODO: 지식백과로 이동
+                    console.log('지식백과로 이동');
+                  }}
+                  size="sm"
+                />
               </Tabs.Panel>
             </Tabs>
           </Box>

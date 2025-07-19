@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { getPosts } from '../services/postService';
 import type { CommunityPost } from '../types';
 import { formatTimeAgo, cardHoverProps } from '../lib/utils';
+import { EmptyState } from '../components/EmptyState';
+import { OnboardingModal } from '../components/OnboardingModal';
 
 function WelcomeSection() {
   const { ref, isVisible } = useScrollAnimation();
@@ -130,16 +132,17 @@ function RecentPosts() {
           </Stack>
         </Center>
       ) : posts.length === 0 ? (
-        <Center py="xl">
-          <Stack align="center" gap="md">
-            <Text size="lg" c="dimmed">
-              아직 게시물이 없습니다
-            </Text>
-            <Text size="sm" c="dimmed">
-              첫 번째 이야기를 들려주세요!
-            </Text>
-          </Stack>
-        </Center>
+        <EmptyState
+          illustration="posts"
+          title="아직 이야기가 없어요!"
+          description="우리 애기들의 첫 번째 이야기를 기다리고 있어요. 따뜻한 소통의 시작이 되어주세요! 💕"
+          actionText="🚀 집사 라운지 구경가기"
+          onAction={() => {
+            // TODO: 커뮤니티 페이지로 이동
+            console.log('커뮤니티로 이동');
+          }}
+          size="md"
+        />
       ) : (
         <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }}>
           {posts.map((post) => (
@@ -166,10 +169,40 @@ function RecentPosts() {
 }
 
 export function HomePage() {
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // 첫 방문자 감지
+  useEffect(() => {
+    const hasVisited = localStorage.getItem('petit-has-visited');
+    if (!hasVisited) {
+      // 페이지 로드 후 1.5초 뒤에 온보딩 모달 표시
+      const timer = setTimeout(() => {
+        setShowOnboarding(true);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('petit-has-visited', 'true');
+    setShowOnboarding(false);
+  };
+
+  const handleOnboardingClose = () => {
+    localStorage.setItem('petit-has-visited', 'true');
+    setShowOnboarding(false);
+  };
+
   return (
     <>
       <WelcomeSection />
       <RecentPosts />
+      
+      <OnboardingModal
+        opened={showOnboarding}
+        onClose={handleOnboardingClose}
+        onComplete={handleOnboardingComplete}
+      />
     </>
   );
 } 

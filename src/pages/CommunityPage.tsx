@@ -41,6 +41,7 @@ import { CommentSection } from '../components/CommentSection';
 import type { CommunityPost } from '../types';
 import { POST_CATEGORIES } from '../types';
 import { formatTimeAgo, getCategoryColor, cardHoverProps, likeButtonProps } from '../lib/utils';
+import { EmptyState } from '../components/EmptyState';
 
 
 
@@ -411,24 +412,25 @@ export function CommunityPage() {
             </Stack>
           </Center>
         ) : posts.length === 0 ? (
-          <Center py="xl">
-            <Stack align="center" gap="md">
-              <Text size="lg" c="dimmed">
-                아직 게시물이 없습니다
-              </Text>
-              <Text size="sm" c="dimmed">
-                첫 번째 이야기를 들려주세요!
-              </Text>
-              {currentUser && (
-                <Button 
-                  leftSection={<IconPencil size="1rem" />}
-                  onClick={() => setWriteModalOpened(true)}
-                >
-                  글쓰기
-                </Button>
-              )}
-            </Stack>
-          </Center>
+          <EmptyState
+            illustration="posts"
+            title="아직 이야기가 시작되지 않았어요!"
+            description={
+              selectedCategory === '전체' 
+                ? "집사들의 첫 번째 이야기를 기다리고 있어요. 우리 애기들의 소중한 순간을 나누어 주세요! 🐾✨"
+                : `${selectedCategory} 관련 이야기가 아직 없어요. 첫 번째 이야기의 주인공이 되어보세요!`
+            }
+            actionText={currentUser ? "✍️ 첫 이야기 쓰기" : "🚀 로그인하고 글쓰기"}
+            onAction={() => {
+              if (currentUser) {
+                setWriteModalOpened(true);
+              } else {
+                // TODO: 로그인 모달 열기
+                console.log('로그인 필요');
+              }
+            }}
+            size="md"
+          />
         ) : (
           <Stack gap="md">
             {posts.map((post) => (

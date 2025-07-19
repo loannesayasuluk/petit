@@ -1,9 +1,10 @@
 import { Group, Button, Anchor, Box, ActionIcon, Menu, Text } from '@mantine/core';
-import { IconPencil, IconLogin, IconUserPlus, IconBell, IconLogout, IconUser, IconSettings } from '@tabler/icons-react';
+import { IconPencil, IconLogin, IconUserPlus, IconBell, IconLogout, IconUser, IconSettings, IconHelp } from '@tabler/icons-react';
 import { useState } from 'react';
 import { AuthModal } from './AuthModal';
 import { PostWriteModal } from './PostWriteModal';
 import { NotificationDropdown } from './NotificationDropdown';
+import { OnboardingModal } from './OnboardingModal';
 import { useAuth } from '../contexts/AuthContext';
 import { Logo } from './Logo';
 import { SearchBar } from './SearchBar';
@@ -17,6 +18,7 @@ export function Header({ currentPage, setCurrentPage }: HeaderProps) {
   const [authModalOpened, setAuthModalOpened] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [writeModalOpened, setWriteModalOpened] = useState(false);
+  const [onboardingOpened, setOnboardingOpened] = useState(false);
   const { currentUser, userProfile, logout } = useAuth();
 
   const handleLogout = async () => {
@@ -99,6 +101,17 @@ export function Header({ currentPage, setCurrentPage }: HeaderProps) {
         
         {/* 사용자 액션 버튼들 */}
         <Group gap="sm">
+          {/* 도움말 버튼 */}
+          <ActionIcon 
+            variant="subtle" 
+            size="lg" 
+            color="gray"
+            onClick={() => setOnboardingOpened(true)}
+            title="Petit 가이드 보기"
+          >
+            <IconHelp size="1.2rem" />
+          </ActionIcon>
+          
           {currentUser ? (
             // 로그인 상태
             <>
@@ -197,6 +210,13 @@ export function Header({ currentPage, setCurrentPage }: HeaderProps) {
           // 글 작성 성공 시 커뮤니티 페이지로 이동
           setCurrentPage('community');
         }}
+      />
+
+      {/* 온보딩 모달 */}
+      <OnboardingModal
+        opened={onboardingOpened}
+        onClose={() => setOnboardingOpened(false)}
+        onComplete={() => setOnboardingOpened(false)}
       />
     </Box>
   );

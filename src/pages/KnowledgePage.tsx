@@ -35,6 +35,7 @@ import type { KnowledgeArticle } from '../types';
 import { ARTICLE_CATEGORIES } from '../types';
 import { getKnowledgeArticles, toggleKnowledgeLike } from '../services/knowledgeService';
 import { formatTimeAgo, getCategoryColor, cardHoverProps, likeButtonProps } from '../lib/utils';
+import { EmptyState } from '../components/EmptyState';
 
 
 
@@ -359,18 +360,21 @@ export function KnowledgePage() {
             </Stack>
           </Center>
         ) : articles.length === 0 ? (
-          <Center py="xl">
-            <Stack align="center" gap="md">
-              <IconBook size={48} color="var(--mantine-color-gray-5)" />
-              <Text size="lg" c="dimmed">
-                아직 {selectedCategory === '전체' ? '' : selectedCategory + ' '} 
-                지식백과가 없습니다
-              </Text>
-              <Text size="sm" c="dimmed">
-                전문가들의 유용한 정보를 기다려주세요!
-              </Text>
-            </Stack>
-          </Center>
+          <EmptyState
+            illustration="knowledge"
+            title="아직 전문가 가이드가 없어요!"
+            description={
+              selectedCategory === '전체' 
+                ? "수의사와 전문가들이 검증한 케어 가이드를 준비 중이에요. 신뢰할 수 있는 정보로 찾아뵐게요! 📚✨"
+                : `${selectedCategory} 분야의 전문가 가이드를 준비하고 있어요. 곧 유용한 정보로 만나요!`
+            }
+            actionText="🚀 집사 라운지에서 물어보기"
+            onAction={() => {
+              // TODO: 커뮤니티 페이지로 이동
+              console.log('커뮤니티로 이동');
+            }}
+            size="md"
+          />
         ) : (
           <SimpleGrid 
             cols={{ base: 1, sm: 2, md: 3 }} 

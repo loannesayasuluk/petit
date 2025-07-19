@@ -17,6 +17,7 @@ import {
 import { IconMessage, IconDots, IconEdit, IconTrash, IconCornerDownRight, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { EmptyState } from './EmptyState';
 import { 
   createComment, 
   subscribeToComments, 
@@ -516,16 +517,23 @@ export function CommentSection({ postId }: CommentSectionProps) {
           </Stack>
         </Center>
       ) : comments.length === 0 ? (
-        <Center py="xl">
-          <Stack align="center" gap="md">
-            <Text size="lg" c="dimmed">
-              아직 댓글이 없습니다
-            </Text>
-            <Text size="sm" c="dimmed">
-              첫 번째 댓글을 남겨보세요!
-            </Text>
-          </Stack>
-        </Center>
+        <EmptyState
+          illustration="comments"
+          title="아직 댓글이 없어요!"
+          description="이 글에 대한 첫 번째 댓글을 남겨주세요. 따뜻한 소통의 시작이 되어주세요! 💬"
+          actionText={currentUser ? "💬 첫 댓글 쓰기" : "🚀 로그인하고 댓글쓰기"}
+          onAction={() => {
+            if (currentUser) {
+              // 댓글 입력창으로 포커스
+              const textarea = document.querySelector('textarea[placeholder*="댓글"]') as HTMLTextAreaElement;
+              textarea?.focus();
+            } else {
+              // TODO: 로그인 모달 열기
+              console.log('로그인 필요');
+            }
+          }}
+          size="sm"
+        />
       ) : (
         <Stack gap="md">
           {comments.map((comment) => (

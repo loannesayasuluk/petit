@@ -217,6 +217,17 @@ html {
   scroll-behavior: smooth;
 }
 
+/* 🌟 빈 상태 애니메이션 */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(15deg); }
+  50% { transform: translateY(-10px) rotate(15deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-5px) scale(1.05); }
+}
+
 /* 🎪 카드 정보 위계 클래스 */
 .card-title {
   font-size: 1.25rem !important;
