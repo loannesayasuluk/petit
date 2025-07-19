@@ -7,7 +7,7 @@ Allow: /knowledge
 Allow: /mypage
 
 # 사이트맵 위치
-Sitemap: https://petit-web.vercel.app/sitemap.xml
+Sitemap: https://gcflab.ai.kr/sitemap.xml
 
 # 크롤링 지연 (서버 부하 방지)
 Crawl-delay: 1 
