@@ -11,7 +11,7 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
   const { ref, isVisible } = useScrollAnimation();
   
   return (
-    <Box py="md">
+    <Box py="xl">
       <Grid 
         align="center" 
         gutter={32}
@@ -26,13 +26,13 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
         <Title order={1} fz={{ base: '1.8rem', md: '2.4rem' }} lh={1.2} fw={800}>
           처음 키우는데 막막하세요?<br/>선배 집사들이 도와드려요! 💕
         </Title>
-        <Text c="dimmed" mt="sm" mb="md" fz="sm">
+        <Text c="dimmed" mt="lg" mb="xl" fz="sm">
           실전 경험담과 따뜻한 조언으로 함께 성장해요<br/>
           지금 <strong>247명의 집사들</strong>이 경험을 나누고 있어요!
         </Text>
         
         {/* 따뜻한 커뮤니티 분위기 */}
-        <Group gap="lg" mb="md">
+        <Group gap="lg" mb="xl">
           <Group gap="xs" style={{ 
             background: 'rgba(241, 114, 88, 0.1)', 
             padding: '8px 12px', 
@@ -105,7 +105,7 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
     </Grid>
 
     {/* 집사들의 핵심 가치 */}
-    <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md" mt="md">
+    <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="lg" mt="xl">
       <Card 
         withBorder 
         radius="lg" 
@@ -201,7 +201,7 @@ function RecentPosts({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'know
   
   return (
     <Box 
-      my="md"
+      my="xl"
       ref={ref}
       style={{
         opacity: isVisible ? 1 : 0,
