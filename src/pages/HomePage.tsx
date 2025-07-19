@@ -11,26 +11,39 @@ function WelcomeSection() {
   const { ref, isVisible } = useScrollAnimation();
   
   return (
-    <>
+    <Box py="md">
       <Grid 
         align="center" 
-        gutter={30}
+        gutter={20}
         ref={ref}
         style={{
           opacity: isVisible ? 1 : 0,
-          transform: isVisible ? 'translateY(0px)' : 'translateY(30px)',
-          transition: 'all 0.8s ease-out',
-          minHeight: '60vh' // 높이 축소
+          transform: isVisible ? 'translateY(0px)' : 'translateY(20px)',
+          transition: 'all 0.6s ease-out',
+          minHeight: '35vh', // 더욱 축소
+          maxHeight: '40vh'
         }}
       >
       <Grid.Col span={{ base: 12, md: 6 }}>
-        <Title order={1} fz={{ base: '2rem', md: '2.8rem' }} lh={1.2} fw={800}>
-          초보 집사를 위한<br/>전문 케어 플랫폼
+        <Title order={1} fz={{ base: '1.8rem', md: '2.4rem' }} lh={1.2} fw={800}>
+          우리 애기 궁금한 것,<br/>바로 물어보세요! 🐾
         </Title>
-        <Text c="dimmed" mt="md" mb="lg" fz="md">
-          실시간 소통 • 전문가 가이드 • 스마트 검색<br/>
-          우리 애기 케어의 모든 것! 🐾
+        <Text c="dimmed" mt="sm" mb="md" fz="sm">
+          전문가와 경험 많은 집사들이 실시간으로 답해드려요<br/>
+          지금 <strong>1,247명</strong>이 함께하고 있어요!
         </Text>
+        
+        {/* 실시간 활동 통계 */}
+        <Group gap="lg" mb="sm">
+          <Group gap="xs">
+            <Text size="xs" c="green">●</Text>
+            <Text size="xs" c="dimmed">오늘 답변 <strong>89개</strong></Text>
+          </Group>
+          <Group gap="xs">
+            <Text size="xs" c="blue">●</Text>
+            <Text size="xs" c="dimmed">해결된 질문 <strong>423개</strong></Text>
+          </Group>
+        </Group>
         <Group>
           <Button 
             size="lg" 
@@ -52,7 +65,7 @@ function WelcomeSection() {
               e.currentTarget.style.boxShadow = '0 4px 15px rgba(241, 114, 88, 0.3)';
             }}
           >
-            🚀 집사 라운지 바로가기
+            💬 무료로 질문하기
           </Button>
         </Group>
       </Grid.Col>
@@ -78,25 +91,64 @@ function WelcomeSection() {
       </Grid.Col>
     </Grid>
 
-    {/* 첫 화면에 핵심 기능 미리보기 */}
-    <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="lg" mt="xl">
-      <Card withBorder radius="lg" p="lg" style={{ textAlign: 'center' }}>
-        <Text size="2rem" mb="sm">💬</Text>
-        <Text fw={600} mb="xs">실시간 소통</Text>
-        <Text size="sm" c="dimmed">집사들과 경험 공유</Text>
+    {/* 실제 사용 사례 미리보기 */}
+    <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md" mt="lg">
+      <Card 
+        withBorder 
+        radius="lg" 
+        p="md" 
+        style={{ 
+          textAlign: 'center', 
+          backgroundColor: '#fef9f3',
+          cursor: 'pointer',
+          transition: 'transform 0.2s ease'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+        onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0px)'}
+      >
+        <Text size="1.5rem" mb="xs">😰</Text>
+        <Text fw={600} size="sm" mb="xs">"우리 강아지가 안 먹어요"</Text>
+        <Text size="xs" c="dimmed">→ 전문가 답변 12개</Text>
+        <Text size="xs" c="blue" mt="xs">지금 바로 질문하기</Text>
       </Card>
-      <Card withBorder radius="lg" p="lg" style={{ textAlign: 'center' }}>
-        <Text size="2rem" mb="sm">📚</Text>
-        <Text fw={600} mb="xs">전문가 가이드</Text>
-        <Text size="sm" c="dimmed">수의사 검증 정보</Text>
+      <Card 
+        withBorder 
+        radius="lg" 
+        p="md" 
+        style={{ 
+          textAlign: 'center', 
+          backgroundColor: '#f0f9ff',
+          cursor: 'pointer',
+          transition: 'transform 0.2s ease'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+        onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0px)'}
+      >
+        <Text size="1.5rem" mb="xs">🏥</Text>
+        <Text fw={600} size="sm" mb="xs">"응급처치 어떻게 하나요?"</Text>
+        <Text size="xs" c="dimmed">→ 수의사 검증 가이드</Text>
+        <Text size="xs" c="blue" mt="xs">응급 가이드 보기</Text>
       </Card>
-      <Card withBorder radius="lg" p="lg" style={{ textAlign: 'center' }}>
-        <Text size="2rem" mb="sm">🔍</Text>
-        <Text fw={600} mb="xs">스마트 검색</Text>
-        <Text size="sm" c="dimmed">Ctrl+K로 빠른 검색</Text>
+      <Card 
+        withBorder 
+        radius="lg" 
+        p="md" 
+        style={{ 
+          textAlign: 'center', 
+          backgroundColor: '#f0fdf4',
+          cursor: 'pointer',
+          transition: 'transform 0.2s ease'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+        onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0px)'}
+      >
+        <Text size="1.5rem" mb="xs">💡</Text>
+        <Text fw={600} size="sm" mb="xs">"사료 추천해주세요"</Text>
+        <Text size="xs" c="dimmed">→ 실전 후기 43개</Text>
+        <Text size="xs" c="blue" mt="xs">후기 더 보기</Text>
       </Card>
     </SimpleGrid>
-    </>
+    </Box>
   );
 }
 
@@ -136,15 +188,18 @@ function RecentPosts() {
   
   return (
     <Box 
-      my={40}
+      my={20}
       ref={ref}
       style={{
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0px)' : 'translateY(30px)',
-        transition: 'all 0.8s ease-out 0.1s'
+        transform: isVisible ? 'translateY(0px)' : 'translateY(20px)',
+        transition: 'all 0.6s ease-out'
       }}
     >
-      <Divider my="md" labelPosition="center" label={<Title order={2}>최신 커뮤니티 소식 💬</Title>} />
+      <Group justify="space-between" mb="md">
+        <Title order={2}>지금 집사들이 묻고 있는 질문들 🔥</Title>
+        <Text size="sm" c="dimmed">실시간 업데이트</Text>
+      </Group>
       
       {loading ? (
         <Center py="xl">
