@@ -50,8 +50,8 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
             border: '1px solid rgba(14, 165, 233, 0.2)'
           }}>
             <Text size="md" c="blue">🤝</Text>
-            <Text size="sm" fw={600} c="blue">도움받은 집사</Text>
-            <Text size="lg" fw={800} c="blue">89명</Text>
+            <Text size="sm" fw={600} c="dimmed">도움받은 집사</Text>
+            <Text size="lg" fw={800} c="dimmed">89명</Text>
           </Group>
         </Group>
         <Group>
@@ -111,9 +111,10 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
         withBorder 
         radius="lg" 
         p="md" 
+        bg="white"
+        shadow="xs"
         style={{ 
-          textAlign: 'center', 
-          backgroundColor: '#fef9f3',
+          textAlign: 'center',
           cursor: 'pointer',
           transition: 'transform 0.2s ease'
         }}
@@ -129,9 +130,10 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
         withBorder 
         radius="lg" 
         p="md" 
+        bg="white"
+        shadow="xs"
         style={{ 
-          textAlign: 'center', 
-          backgroundColor: '#f0f9ff',
+          textAlign: 'center',
           cursor: 'pointer',
           transition: 'transform 0.2s ease'
         }}
@@ -147,9 +149,10 @@ function WelcomeSection({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'k
         withBorder 
         radius="lg" 
         p="md" 
+        bg="white"
+        shadow="xs"
         style={{ 
-          textAlign: 'center', 
-          backgroundColor: '#f0fdf4',
+          textAlign: 'center',
           cursor: 'pointer',
           transition: 'transform 0.2s ease'
         }}
@@ -202,7 +205,7 @@ function RecentPosts({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'know
   
   return (
     <Box 
-      my="xl"
+      my={80}
       ref={ref}
       style={{
         opacity: isVisible ? 1 : 0,
@@ -238,6 +241,8 @@ function RecentPosts({ setCurrentPage }: { setCurrentPage: (page: 'home' | 'know
               key={post.id}
               withBorder 
               radius="lg"
+              bg="white"
+              shadow="xs"
               {...cardHoverProps}
             >
               <Text fw={700} lineClamp={2}>
