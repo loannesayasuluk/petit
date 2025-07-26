@@ -1,4 +1,4 @@
-import { Group, Button, Anchor, Box, ActionIcon, Menu, Text } from '@mantine/core';
+import { Group, Box, Menu, Text } from '@mantine/core';
 import { IconPencil, IconLogin, IconUserPlus, IconBell, IconLogout, IconUser, IconSettings, IconHelp } from '@tabler/icons-react';
 import { useState } from 'react';
 import { AuthModal } from './AuthModal';
@@ -64,85 +64,88 @@ export function Header({ currentPage, setCurrentPage }: HeaderProps) {
       
       <Group gap="lg">
         {/* 네비게이션 메뉴 */}
-        <Group gap="md">
-          <Anchor 
+        <nav className="flex gap-6">
+          <button
             onClick={() => setCurrentPage('home')}
-            c={currentPage === 'home' ? 'warm-coral.6' : 'gray.7'} 
-            fw={700}
-            style={{ cursor: 'pointer' }}
+            className={`font-bold text-sm transition-colors duration-200 hover:text-petit-primary relative ${
+              currentPage === 'home' 
+                ? 'text-petit-primary after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-petit-primary' 
+                : 'text-gray-600 hover:text-petit-primary'
+            }`}
           >
             홈
-          </Anchor>
-          <Anchor 
+          </button>
+          <button
             onClick={() => setCurrentPage('knowledge')}
-            c={currentPage === 'knowledge' ? 'warm-coral.6' : 'gray.7'} 
-            fw={700}
-            style={{ cursor: 'pointer' }}
+            className={`font-bold text-sm transition-colors duration-200 hover:text-petit-primary relative ${
+              currentPage === 'knowledge' 
+                ? 'text-petit-primary after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-petit-primary' 
+                : 'text-gray-600 hover:text-petit-primary'
+            }`}
           >
             지식백과
-          </Anchor>
-          <Anchor 
+          </button>
+          <button
             onClick={() => setCurrentPage('community')}
-            c={currentPage === 'community' ? 'warm-coral.6' : 'gray.7'} 
-            fw={700}
-            style={{ cursor: 'pointer' }}
+            className={`font-bold text-sm transition-colors duration-200 hover:text-petit-primary relative ${
+              currentPage === 'community' 
+                ? 'text-petit-primary after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-petit-primary' 
+                : 'text-gray-600 hover:text-petit-primary'
+            }`}
           >
             커뮤니티
-          </Anchor>
-          <Anchor 
+          </button>
+          <button
             onClick={() => setCurrentPage('mypage')}
-            c={currentPage === 'mypage' ? 'warm-coral.6' : 'gray.7'} 
-            fw={700}
-            style={{ cursor: 'pointer' }}
+            className={`font-bold text-sm transition-colors duration-200 hover:text-petit-primary relative ${
+              currentPage === 'mypage' 
+                ? 'text-petit-primary after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-petit-primary' 
+                : 'text-gray-600 hover:text-petit-primary'
+            }`}
           >
             마이페이지
-          </Anchor>
-        </Group>
+          </button>
+        </nav>
         
         {/* 사용자 액션 버튼들 */}
         <Group gap="sm">
           {/* 도움말 버튼 */}
-          <ActionIcon 
-            variant="subtle" 
-            size="lg" 
-            color="gray"
+          <button
+            className="p-2 text-gray-500 hover:text-petit-primary hover:bg-gray-100 rounded-lg transition-all duration-200"
             onClick={() => setOnboardingOpened(true)}
             title="Petit 가이드 보기"
           >
             <IconHelp size="1.2rem" />
-          </ActionIcon>
+          </button>
           
           {currentUser ? (
             // 로그인 상태
             <>
               {/* 알림 아이콘 */}
               <NotificationDropdown>
-                <ActionIcon variant="subtle" size="lg" color="gray">
+                <button className="p-2 text-gray-500 hover:text-petit-primary hover:bg-gray-100 rounded-lg transition-all duration-200">
                   <IconBell size="1.2rem" />
-                </ActionIcon>
+                </button>
               </NotificationDropdown>
               
               {/* 글쓰기 버튼 */}
-              <Button 
-                leftSection={<IconPencil size="1rem"/>}
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-petit-primary to-petit-primary-light text-white rounded-lg hover:from-petit-primary-dark hover:to-petit-primary transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-medium"
                 onClick={() => setWriteModalOpened(true)}
-                className="floating-button"
-                size="sm"
               >
+                <IconPencil size="1rem"/>
                 ✍️ 글쓰기
-              </Button>
+              </button>
               
               {/* 사용자 메뉴 */}
               <Menu shadow="md" width={200}>
                 <Menu.Target>
-                  <Button variant="subtle" style={{ padding: '8px' }}>
-                    <Group gap="xs">
-                      <Text size="1.5rem">{userProfile?.avatar || '👤'}</Text>
-                      <Text size="sm" fw={600}>
-                        {userProfile?.nickname || '사용자'}
-                      </Text>
-                    </Group>
-                  </Button>
+                  <button className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                    <Text size="1.5rem">{userProfile?.avatar || '👤'}</Text>
+                    <Text size="sm" fw={600}>
+                      {userProfile?.nickname || '사용자'}
+                    </Text>
+                  </button>
                 </Menu.Target>
                 
                 <Menu.Dropdown>
@@ -169,26 +172,26 @@ export function Header({ currentPage, setCurrentPage }: HeaderProps) {
           ) : (
             // 로그아웃 상태
             <>
-              <Button 
-                variant="subtle" 
-                leftSection={<IconLogin size="1rem"/>}
+              <button
+                className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-petit-primary transition-colors duration-200 rounded-lg hover:bg-gray-50"
                 onClick={() => {
                   setAuthMode('login');
                   setAuthModalOpened(true);
                 }}
               >
+                <IconLogin size="1rem"/>
                 로그인
-              </Button>
-              <Button 
-                variant="light" 
-                leftSection={<IconUserPlus size="1rem"/>}
+              </button>
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-petit-primary text-white rounded-lg hover:bg-petit-primary-dark transition-colors duration-200 shadow-sm hover:shadow-md"
                 onClick={() => {
                   setAuthMode('signup');
                   setAuthModalOpened(true);
                 }}
               >
+                <IconUserPlus size="1rem"/>
                 회원가입
-              </Button>
+              </button>
             </>
           )}
         </Group>
