@@ -49,13 +49,15 @@ export function cardHoverProps() {
 }
 
 // 👍 좋아요 버튼 props  
-export function likeButtonProps(isLiked: boolean = false) {
+export function likeButtonProps(isLiked: boolean = false, loading: boolean = false) {
   return {
     className: cn(
       "flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-all duration-200",
+      loading && "opacity-50 cursor-not-allowed",
       isLiked 
         ? "bg-petit-primary text-white hover:bg-petit-primary-dark" 
         : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-    )
+    ),
+    disabled: loading
   };
 }
